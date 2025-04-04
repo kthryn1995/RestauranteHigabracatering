@@ -75,14 +75,17 @@ public class detallespedido extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Fecha", "Tipo de servicio", "Lugar de entrega", "opción"
+                "Dia de reservacion", "Tipo de servicio", "Lugar de entrega", "opción"
             }
         ));
         jScrollPane1.setViewportView(jTable1);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setMinWidth(80);
-            jTable1.getColumnModel().getColumn(0).setPreferredWidth(80);
-            jTable1.getColumnModel().getColumn(0).setMaxWidth(80);
+            jTable1.getColumnModel().getColumn(0).setMinWidth(110);
+            jTable1.getColumnModel().getColumn(0).setPreferredWidth(110);
+            jTable1.getColumnModel().getColumn(0).setMaxWidth(110);
+            jTable1.getColumnModel().getColumn(3).setMinWidth(50);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(50);
+            jTable1.getColumnModel().getColumn(3).setMaxWidth(50);
         }
 
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/atras.png"))); // NOI18N

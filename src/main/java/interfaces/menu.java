@@ -3,6 +3,7 @@ package interfaces;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -73,41 +74,40 @@ public class menu extends javax.swing.JFrame {
 }
 
         
-      public void añadirpedidos() {
-    int fila = jtpedido.getSelectedRow();
+   public void añadirpedidos() {
+    int filaSeleccionada = jtpedido.getSelectedRow();
+        if (filaSeleccionada != -1) {
+            // Obtener datos del menú seleccionado en la tabla
+            String tipoComida = jtpedido.getValueAt(filaSeleccionada, 0).toString(); // No se guarda en BD, solo validación
+            String opcion = jtpedido.getValueAt(filaSeleccionada, 1).toString();
+            String descripcion = jtpedido.getValueAt(filaSeleccionada, 2).toString();
 
-    if (fila == -1) {
-        JOptionPane.showMessageDialog(null, "Seleccione una fila");
-        return;
+            // Obtener datos de los combo box
+            String dia = jComboBoxDias.getSelectedItem().toString();
+            String tipoServicio = jComboServicio.getSelectedItem().toString();
+            String lugarEntrega = jComboBoxlugar.getSelectedItem().toString();
+
+            // Conexión y guardado en la base de datos
+            try  {
+                String sql = "INSERT INTO reservacion (Dia_de_reservacion, Lugar_entrega, TipoServicio, Opcion, descripcion) VALUES (?, ?, ?, ?, ?)";
+                 Connection conet = co.getConnection();
+               PreparedStatement pst = conet.prepareStatement(sql);
+                pst.setString(1, dia);
+                pst.setString(2, lugarEntrega);
+                pst.setString(3, tipoServicio);
+                pst.setString(4, opcion);
+                pst.setString(5, descripcion);
+
+                pst.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Reservación guardada con éxito.");
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error al guardar la reservación: " + ex.getMessage());
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Por favor selecciona una opción del menú.");
+        }
     }
-    
-    //Obtener los datos en los combobox
-   String diaSeleccionado = jComboBoxDias.getSelectedItem().toString();
-   String servicioSeleccionado = jComboServicio.getSelectedItem().toString();
-   String Lugarentrega= jComboBoxlugar.getSelectedItem().toString();
-
-    // Obtener los datos seleccionados
-  
-
-    // Conexión a la base de datos
-    try {
-       String sql = "INSERT INTO reservación (Dia_reservacion,Lugar_entrega,TipoServicio) VALUES (?,?,?)";
-        Connection conet = co.getConnection();
-        PreparedStatement pst = conet.prepareStatement(sql);
-        
-       pst.setString(1, diaSeleccionado); 
-        pst.setString(2, servicioSeleccionado); 
-        pst.setString(3, Lugarentrega); 
-
- 
-
-        pst.executeUpdate();
-        JOptionPane.showMessageDialog(null, "Pedido guardado correctamente");
-
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(null, "Error al guardar pedido: " + e.getMessage());
-    }
-}
   
         
         

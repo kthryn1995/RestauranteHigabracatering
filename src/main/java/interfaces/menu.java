@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 /*
@@ -72,7 +73,11 @@ public class menu extends javax.swing.JFrame {
        
     }
 }
-
+ 
+    
+    
+    
+    
         
    public void añadirpedidos() {
     int filaSeleccionada = jtpedido.getSelectedRow();
@@ -386,6 +391,7 @@ public class menu extends javax.swing.JFrame {
     private void btnconfirmarpedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnconfirmarpedidoActionPerformed
         detallespedido dp = new detallespedido();
         dp.setVisible(true);
+        dp.detallesdelpedido();
         this.dispose();
     }//GEN-LAST:event_btnconfirmarpedidoActionPerformed
 

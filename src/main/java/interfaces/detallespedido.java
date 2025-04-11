@@ -1,5 +1,11 @@
 package interfaces;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -10,7 +16,8 @@ package interfaces;
  * @author Kthryn
  */
 public class detallespedido extends javax.swing.JFrame {
-
+ conexion co= new conexion();
+ Connection conet;
     /**
      * Creates new form detallespedido
      */
@@ -20,6 +27,56 @@ public class detallespedido extends javax.swing.JFrame {
         setResizable(false); 
     }
 
+    
+  
+    
+    
+ public void  detallesdelpedido() {
+    String sql = "SELECT Dia_de_reservacion, TipoServicio, Lugar_entrega, Opcion FROM reservacion";
+
+    try {
+         Connection conet = co.getConnection();
+
+        // Tu clase conexión
+        PreparedStatement pst = conet.prepareStatement(sql);
+        ResultSet rs = pst.executeQuery();
+
+        DefaultTableModel modelo = (DefaultTableModel) jTablepedido.getModel();
+        modelo.setRowCount(0); // Limpiar tabla antes de cargar nuevos datos
+
+        while (rs.next()) {
+            Object[] fila = new Object[4];
+            fila[0] = rs.getString("Dia_de_reservacion");
+            fila[1] = rs.getString("TipoServicio");
+            fila[2] = rs.getString("Lugar_entrega");
+            fila[3] = rs.getString("Opcion");
+            
+     
+
+            modelo.addRow(fila);
+        }
+
+        rs.close();
+        pst.close();
+        conet.close();
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Error al cargar los datos: " + e.getMessage());
+    }
+}
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

@@ -31,6 +31,11 @@ public class detallespedido extends javax.swing.JFrame {
   
     
     
+    
+    
+    
+    
+    
  public void  detallesdelpedido() {
     String sql = "SELECT Dia_de_reservacion, TipoServicio, Lugar_entrega, Opcion FROM reservacion";
 
@@ -94,7 +99,6 @@ public class detallespedido extends javax.swing.JFrame {
         jTablepedido = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         btneliminar = new javax.swing.JButton();
-        btnactualizar = new javax.swing.JButton();
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -156,8 +160,6 @@ public class detallespedido extends javax.swing.JFrame {
 
         btneliminar.setText("Eliminar");
 
-        btnactualizar.setText("Actualizar");
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -175,8 +177,6 @@ public class detallespedido extends javax.swing.JFrame {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addGap(6, 6, 6)
                                 .addComponent(btneliminar)
-                                .addGap(31, 31, 31)
-                                .addComponent(btnactualizar)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(btnconfirmar)))))
                 .addContainerGap())
@@ -191,8 +191,7 @@ public class detallespedido extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnconfirmar)
-                    .addComponent(btneliminar)
-                    .addComponent(btnactualizar))
+                    .addComponent(btneliminar))
                 .addContainerGap(18, Short.MAX_VALUE))
         );
 
@@ -254,7 +253,6 @@ public class detallespedido extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnactualizar;
     private javax.swing.JButton btnconfirmar;
     private javax.swing.JButton btneliminar;
     private javax.swing.JButton jButton1;

@@ -95,8 +95,6 @@
                               <Group type="102" alignment="1" attributes="0">
                                   <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
                                   <Component id="btneliminar" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
-                                  <Component id="btnactualizar" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="32767" attributes="0"/>
                                   <Component id="btnconfirmar" min="-2" max="-2" attributes="0"/>
                               </Group>
@@ -118,7 +116,6 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="btnconfirmar" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="btneliminar" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="btnactualizar" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace pref="18" max="32767" attributes="0"/>
               </Group>
@@ -195,11 +192,6 @@
         <Component class="javax.swing.JButton" name="btneliminar">
           <Properties>
             <Property name="text" type="java.lang.String" value="Eliminar"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JButton" name="btnactualizar">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Actualizar"/>
           </Properties>
         </Component>
       </SubComponents>

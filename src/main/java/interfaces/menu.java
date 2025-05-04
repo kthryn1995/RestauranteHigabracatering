@@ -41,7 +41,7 @@ public class menu extends javax.swing.JFrame {
    
  
     public void ConsultarMenu() {
-    String sql = "SELECT * FROM menus WHERE dia_semana = ? AND tipo_comida = ?";
+    String sql = "SELECT * FROM plan_comidas WHERE dia_semana = ? AND tipo_comida = ?";
     
     try {
         Connection conet = co.getConnection();
@@ -78,7 +78,39 @@ public class menu extends javax.swing.JFrame {
     }
 }
  
-  
+  public void Mostrarusuario() {
+    String cedula = txtcedula1.getText().trim(); // Elimina espacios en blanco
+    if (cedula.isEmpty()) {
+        jLabelnombreusuario.setText("Ingrese una cédula");
+        return;
+    }
+
+    String sql = "SELECT nombres, apellidos FROM usuario WHERE idUsuario = ?";
+
+    try {
+        conet = co.getConnection();
+        PreparedStatement pst = conet.prepareStatement(sql);
+        pst.setString(1, cedula);
+        rs = pst.executeQuery();
+
+        if (rs.next()) {
+            String nombreCompleto = rs.getString("nombres") + " " + rs.getString("apellidos");
+            jLabelnombreusuario.setText(nombreCompleto);
+            System.out.println("Usuario encontrado: " + nombreCompleto);
+         
+            
+        } else {
+            jLabelnombreusuario.setText("Usuario no encontrado");
+            System.out.println("No se encontró la cédula: " + cedula);
+        }
+        jLabelnombreusuario.repaint(); // Forzar actualización
+
+    } catch (Exception e) {
+        jLabelnombreusuario.setText("Error al buscar usuario");
+        System.out.println("Error: " + e.getMessage());
+    }
+}
+
 
 
         
@@ -94,8 +126,7 @@ public class menu extends javax.swing.JFrame {
             String dia = jComboBoxDias.getSelectedItem().toString();
             String tipoServicio = jComboServicio.getSelectedItem().toString();
             String lugarEntrega = jComboBoxlugar.getSelectedItem().toString();
-            
-            //String cedula = txtcedula2.getText();
+            String cedula = txtcedula1.getText();
 
           
 
@@ -109,7 +140,7 @@ public class menu extends javax.swing.JFrame {
                 pst.setString(3, tipoServicio);
                 pst.setString(4, opcion);
                 pst.setString(5, descripcion);
-               //pst.setString(6, cedula);
+                pst.setString(6, cedula);
 
                 pst.executeUpdate();
                 JOptionPane.showMessageDialog(null, "Reservación guardada con éxito.");
@@ -156,7 +187,6 @@ public class menu extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         btndetallesdelpedido = new javax.swing.JButton();
-        btnconfirmarpedido = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jtpedido = new javax.swing.JTable();
@@ -164,6 +194,9 @@ public class menu extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         btnañadir = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        txtcedula1 = new javax.swing.JTextField();
+        jLabelnombreusuario = new javax.swing.JLabel();
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -212,15 +245,6 @@ public class menu extends javax.swing.JFrame {
         );
 
         btndetallesdelpedido.setText("Detalles del pedido");
-
-        btnconfirmarpedido.setBackground(new java.awt.Color(204, 102, 0));
-        btnconfirmarpedido.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnconfirmarpedido.setText("DETALLES DEL PEDIDO");
-        btnconfirmarpedido.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnconfirmarpedidoActionPerformed(evt);
-            }
-        });
 
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/home.png"))); // NOI18N
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -276,6 +300,16 @@ public class menu extends javax.swing.JFrame {
             }
         });
 
+        jLabel5.setText("Ingrese numero de cedula");
+
+        txtcedula1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtcedula1ActionPerformed(evt);
+            }
+        });
+
+        jLabelnombreusuario.setText("jLabel6");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -302,9 +336,7 @@ public class menu extends javax.swing.JFrame {
                                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(86, 86, 86)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(btnconfirmarpedido)
-                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 461, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 461, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(331, 331, 331)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -320,11 +352,19 @@ public class menu extends javax.swing.JFrame {
                         .addGap(481, 481, 481)
                         .addComponent(btnañadir))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(31, 31, 31)
-                        .addComponent(jButton1))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(14, 14, 14)
-                        .addComponent(jButton2)))
+                        .addComponent(jButton2))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(jLabelnombreusuario, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                            .addGap(31, 31, 31)
+                            .addComponent(jButton1)
+                            .addGap(281, 281, 281)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtcedula1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -339,9 +379,7 @@ public class menu extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(22, 22, 22)
-                        .addComponent(btnconfirmarpedido)
-                        .addGap(32, 32, 32)
+                        .addGap(81, 81, 81)
                         .addComponent(jLabel4)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -363,15 +401,25 @@ public class menu extends javax.swing.JFrame {
                         .addComponent(jLabellugarentrega, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jComboBoxlugar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(145, 145, 145))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton1)
+                        .addGap(28, 28, 28)
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1)
+                        .addGap(145, 145, 145))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(29, 29, 29)
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtcedula1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabelnombreusuario)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -383,8 +431,8 @@ public class menu extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 419, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 6, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 447, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
@@ -395,13 +443,6 @@ public class menu extends javax.swing.JFrame {
         
         
     }//GEN-LAST:event_jComboServicioActionPerformed
-
-    private void btnconfirmarpedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnconfirmarpedidoActionPerformed
-        detallespedido dp = new detallespedido();
-        dp.setVisible(true);
-        dp.detallesdelpedido();
-        this.dispose();
-    }//GEN-LAST:event_btnconfirmarpedidoActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
     inicio in= new inicio();
@@ -421,6 +462,10 @@ public class menu extends javax.swing.JFrame {
     private void jtpedidoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jtpedidoMouseClicked
  
     }//GEN-LAST:event_jtpedidoMouseClicked
+
+    private void txtcedula1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtcedula1ActionPerformed
+        Mostrarusuario();
+    }//GEN-LAST:event_txtcedula1ActionPerformed
 
 
     /**
@@ -460,7 +505,6 @@ public class menu extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnañadir;
-    private javax.swing.JButton btnconfirmarpedido;
     private javax.swing.JButton btndetallesdelpedido;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
@@ -472,12 +516,15 @@ public class menu extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabelcalendario;
     private javax.swing.JLabel jLabellugarentrega;
+    private javax.swing.JLabel jLabelnombreusuario;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jtpedido;
+    private javax.swing.JTextField txtcedula1;
     // End of variables declaration//GEN-END:variables
 }

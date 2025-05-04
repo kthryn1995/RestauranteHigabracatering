@@ -29,11 +29,7 @@ public class detallespedido extends javax.swing.JFrame {
 
     
   
-    
-    
-    
-    
-    
+
     
     
  public void  detallesdelpedido() {
@@ -132,13 +128,13 @@ public class detallespedido extends javax.swing.JFrame {
 
         jTablepedido.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Dia de reservacion", "Tipo de servicio", "Lugar de entrega", "Opcion"
+                "Dia de reservacion", "cedula", "Nombre", "Opcion", "Servicio", "Ceco", "Area", "Contratista"
             }
         ));
         jScrollPane1.setViewportView(jTablepedido);
@@ -146,9 +142,21 @@ public class detallespedido extends javax.swing.JFrame {
             jTablepedido.getColumnModel().getColumn(0).setMinWidth(110);
             jTablepedido.getColumnModel().getColumn(0).setPreferredWidth(110);
             jTablepedido.getColumnModel().getColumn(0).setMaxWidth(110);
+            jTablepedido.getColumnModel().getColumn(1).setMinWidth(70);
+            jTablepedido.getColumnModel().getColumn(1).setPreferredWidth(70);
+            jTablepedido.getColumnModel().getColumn(1).setMaxWidth(70);
             jTablepedido.getColumnModel().getColumn(3).setMinWidth(50);
             jTablepedido.getColumnModel().getColumn(3).setPreferredWidth(50);
             jTablepedido.getColumnModel().getColumn(3).setMaxWidth(50);
+            jTablepedido.getColumnModel().getColumn(4).setMinWidth(50);
+            jTablepedido.getColumnModel().getColumn(4).setPreferredWidth(50);
+            jTablepedido.getColumnModel().getColumn(4).setMaxWidth(50);
+            jTablepedido.getColumnModel().getColumn(5).setMinWidth(50);
+            jTablepedido.getColumnModel().getColumn(5).setPreferredWidth(50);
+            jTablepedido.getColumnModel().getColumn(5).setMaxWidth(50);
+            jTablepedido.getColumnModel().getColumn(6).setMinWidth(60);
+            jTablepedido.getColumnModel().getColumn(6).setPreferredWidth(60);
+            jTablepedido.getColumnModel().getColumn(6).setMaxWidth(60);
         }
 
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/atras.png"))); // NOI18N
@@ -159,26 +167,29 @@ public class detallespedido extends javax.swing.JFrame {
         });
 
         btneliminar.setText("Eliminar");
+        btneliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btneliminarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 7, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addGap(6, 6, 6)
-                                .addComponent(btneliminar)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnconfirmar)))))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(btneliminar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnconfirmar))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 532, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -216,6 +227,10 @@ public class detallespedido extends javax.swing.JFrame {
         mn.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void btneliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneliminarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btneliminarActionPerformed
 
     /**
      * @param args the command line arguments

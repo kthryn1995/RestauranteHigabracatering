@@ -39,7 +39,6 @@ public class registro extends javax.swing.JFrame {
     public void limpiar(){
     txtidentificacion.setText("");
     txtnombre.setText("");
-    txtapellidos.setText("");
     txtceco.setText("");
     txtarea.setText("");
     txtcontratista.setText("");
@@ -54,8 +53,7 @@ public class registro extends javax.swing.JFrame {
     public void agregar(){
         try{
            int idUsuario= Integer.parseInt(txtidentificacion.getText());
-           String Nombres=txtnombre.getText();
-           String apellidos=txtapellidos.getText();
+           String NombreCompleto=txtnombre.getText();
            String Ceco = txtceco.getText();
            String Area=txtarea.getText();
            String Contratista=txtcontratista.getText();
@@ -63,16 +61,15 @@ public class registro extends javax.swing.JFrame {
 
 // segundo- enviar informacion obtenida a la BD
 
-String sql= "insert into usuario(idUsuario,Nombres,apellidos,Ceco,Area,Contratista) values (?,?,?,?,?,?)";
+String sql= "insert into usuario(idUsuario,NombreCompleto,Ceco,Area,Contratista) values (?,?,?,?,?)";
 
 conet= co.getConnection();
        PreparedStatement ps= conet.prepareStatement(sql);
 ps.setInt(1,idUsuario);
-ps.setString(2,Nombres);
-ps.setString(3,apellidos);
-ps.setString(4,Ceco);
-ps.setString(5,Area);
-ps.setString(6,Contratista);
+ps.setString(2,NombreCompleto);
+ps.setString(3,Ceco);
+ps.setString(4,Area);
+ps.setString(5,Contratista);
 ps.executeUpdate();
 
 //guardamos los datos de manera ordenada
@@ -101,7 +98,6 @@ catch (SQLException e){
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         txtnombre = new javax.swing.JTextField();
-        txtapellidos = new javax.swing.JTextField();
         txtidentificacion = new javax.swing.JTextField();
         txtceco = new javax.swing.JTextField();
         txtarea = new javax.swing.JTextField();
@@ -118,7 +114,7 @@ catch (SQLException e){
         jLabel1.setText("jLabel1");
 
         txtnombre.setForeground(new java.awt.Color(204, 204, 204));
-        txtnombre.setText("nombre");
+        txtnombre.setText("Nombre completo");
         txtnombre.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 txtnombreFocusGained(evt);
@@ -130,17 +126,6 @@ catch (SQLException e){
         txtnombre.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtnombreActionPerformed(evt);
-            }
-        });
-
-        txtapellidos.setForeground(new java.awt.Color(204, 204, 204));
-        txtapellidos.setText("apellidos");
-        txtapellidos.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtapellidosFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtapellidosFocusLost(evt);
             }
         });
 
@@ -234,14 +219,9 @@ catch (SQLException e){
                             .addComponent(txtidentificacion)
                             .addComponent(txtceco)
                             .addComponent(txtarea)
-                            .addComponent(txtcontratista))))
+                            .addComponent(txtcontratista)
+                            .addComponent(txtnombre))))
                 .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(txtapellidos)
-                .addGap(12, 12, 12))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -250,9 +230,7 @@ catch (SQLException e){
                 .addGap(29, 29, 29)
                 .addComponent(txtidentificacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtapellidos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtceco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -296,7 +274,7 @@ limpiar();
     }//GEN-LAST:event_RegistrarseActionPerformed
 
     private void txtnombreFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtnombreFocusGained
-       if (txtnombre.getText().equals("nombre")) {
+       if (txtnombre.getText().equals("Nombre completo")) {
     txtnombre.setText("");
     txtnombre.setForeground(Color.BLACK);
 }
@@ -304,24 +282,10 @@ limpiar();
 
     private void txtnombreFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtnombreFocusLost
 if (txtnombre.getText().isEmpty()) {
-    txtnombre.setText("nombre");
+    txtnombre.setText("Nombre completo");
     txtnombre.setForeground(Color.GRAY);
 }       
     }//GEN-LAST:event_txtnombreFocusLost
-
-    private void txtapellidosFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtapellidosFocusGained
-         if (txtapellidos.getText().equals("apellidos")) {
-    txtapellidos.setText("");
-    txtapellidos.setForeground(Color.BLACK);
-}
-    }//GEN-LAST:event_txtapellidosFocusGained
-
-    private void txtapellidosFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtapellidosFocusLost
-       if (txtapellidos.getText().isEmpty()) {
-    txtapellidos.setText("apellidos");
-    txtapellidos.setForeground(Color.GRAY);
-} 
-    }//GEN-LAST:event_txtapellidosFocusLost
           
     private void txtidentificacionFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtidentificacionFocusGained
           if (txtidentificacion.getText().equals("número de identificación")) {
@@ -428,7 +392,6 @@ if (txtnombre.getText().isEmpty()) {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JTextField txtapellidos;
     private javax.swing.JTextField txtarea;
     private javax.swing.JTextField txtceco;
     private javax.swing.JTextField txtcontratista;

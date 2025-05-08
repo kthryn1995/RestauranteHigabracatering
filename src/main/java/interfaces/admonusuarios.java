@@ -51,11 +51,12 @@ DefaultTableModel tablausuarios;
       
     
     tablausuarios =(DefaultTableModel)jtregistro.getModel();
-    
+    tablausuarios.setRowCount(0); //limpia todas las filas anteriores
+
 while (rs.next()) {
     Object[] persona = new Object[5];
     persona[0] = rs.getInt("idUsuario");
-    persona[1] = rs.getString("Nombres") + " " + rs.getString("apellidos");
+    persona[1] = rs.getString("NombreCompleto");
     persona[2] = rs.getString("Ceco");
     persona[3] = rs.getString("Area");
     persona[4] = rs.getString("Contratista");

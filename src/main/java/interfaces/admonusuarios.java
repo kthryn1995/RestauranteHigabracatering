@@ -1,6 +1,7 @@
 package interfaces;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -73,6 +74,39 @@ JOptionPane.showMessageDialog(null, "Error al cargar los datos: " + e.getMessage
         
     }
     
+   public void actualizar() {
+    int totalFilas = jtregistro.getRowCount();
+
+    for (int i = 0; i < totalFilas; i++) {
+        int id = (int) jtregistro.getValueAt(i, 0);
+        String nombre = jtregistro.getValueAt(i, 1).toString();
+        String ceco = jtregistro.getValueAt(i, 2).toString();
+        String area = jtregistro.getValueAt(i, 3).toString();
+        String contratista = jtregistro.getValueAt(i, 4).toString();
+
+        String sql = "UPDATE usuario SET NombreCompleto=?, Ceco=?, Area=?, Contratista=? WHERE idUsuario=?";
+
+        try {
+            conet = co.getConnection();
+            PreparedStatement ps = conet.prepareStatement(sql);
+            ps.setString(1, nombre);
+            ps.setString(2, ceco);
+            ps.setString(3, area);
+            ps.setString(4, contratista);
+            ps.setInt(5, id);
+
+            int filas = ps.executeUpdate();
+            System.out.println("Filas afectadas en la fila " + (i+1) + ": " + filas);
+
+            ps.close(); // Importante cerrar
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al actualizar fila " + (i + 1) + ": " + e.getMessage());
+        }
+    }
+
+    JOptionPane.showMessageDialog(null, "Actualización finalizada.");
+}
     
     
 
@@ -96,6 +130,11 @@ JOptionPane.showMessageDialog(null, "Error al cargar los datos: " + e.getMessage
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         btnactualizar.setText("ACTUALIZAR");
+        btnactualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnactualizarActionPerformed(evt);
+            }
+        });
 
         btneliminar.setText("ELIMINAR");
 
@@ -157,6 +196,10 @@ JOptionPane.showMessageDialog(null, "Error al cargar los datos: " + e.getMessage
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnactualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnactualizarActionPerformed
+        actualizar();
+    }//GEN-LAST:event_btnactualizarActionPerformed
 
     /**
      * @param args the command line arguments

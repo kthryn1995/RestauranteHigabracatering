@@ -25,12 +25,11 @@ public class detallespedido extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         setResizable(false); 
+        detallesdelpedido();
     }
 
-    
-  
 
-    
+  
     
  public void  detallesdelpedido() {
     String sql = "SELECT Dia_de_reservacion, TipoServicio, Lugar_entrega, Opcion FROM reservacion";
@@ -200,9 +199,9 @@ public class detallespedido extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnconfirmar)
-                    .addComponent(btneliminar))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btneliminar)
+                    .addComponent(btnconfirmar))
                 .addContainerGap(18, Short.MAX_VALUE))
         );
 

@@ -33,13 +33,13 @@ DefaultTableModel tablausuarios;
         initComponents();
         setLocationRelativeTo(null);
         setResizable(false);
-        consultar();
+        consultaradmonusuario();
         
     }
     
     //creamos nuestro metodo consultar
     
-    public void consultar(){
+    public void consultaradmonusuario(){
         String sql = "select * from usuario";// seleccionamos la tabla 
         //de donde quiero traer la informacion
         
@@ -130,7 +130,7 @@ JOptionPane.showMessageDialog(null, "Error al cargar los datos: " + e.getMessage
             int filas = ps.executeUpdate();
 
             if (filas > 0) {
-                // Quitar la fila del modelo de la tabla visual
+                
                 DefaultTableModel model = (DefaultTableModel) jtregistro.getModel();
                 model.removeRow(filaSeleccionada);
 

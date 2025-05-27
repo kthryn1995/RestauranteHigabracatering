@@ -31,27 +31,41 @@ public class detallespedido extends javax.swing.JFrame {
 
   
     
- public void  detallesdelpedido() {
-    String sql = "SELECT Dia_de_reservacion, TipoServicio, Lugar_entrega, Opcion FROM reservacion";
+public void detallesdelpedido() {
+   String sql = "SELECT r.idUsuario, u.nombreCompleto, r.Dia_de_reservacion, r.Opcion, " +
+             "r.Lugar_entrega, r.TipoServicio, u.Ceco, u.Area, u.Contratista " +
+             "FROM reservacion r " +
+             "JOIN usuario u ON r.idusuario = u.idUsuario";
+    
+    
+//r. es un alias para la tabla reservacion.
+//u alias para la tabla usuario
+// cómo deben coincidir las filas entre las dos tablas:
+//ON r.idusuario = u.idUsuario
+
+
+
 
     try {
-         Connection conet = co.getConnection();
-
-        // Tu clase conexión
+        Connection conet = co.getConnection();
         PreparedStatement pst = conet.prepareStatement(sql);
         ResultSet rs = pst.executeQuery();
 
         DefaultTableModel modelo = (DefaultTableModel) jTablepedido.getModel();
-        modelo.setRowCount(0); // Limpiar tabla antes de cargar nuevos datos
+        modelo.setRowCount(0); // Limpiar la tabla antes de cargar nuevos datos
 
         while (rs.next()) {
-            Object[] fila = new Object[4];
-            fila[0] = rs.getString("Dia_de_reservacion");
-            fila[1] = rs.getString("TipoServicio");
-            fila[2] = rs.getString("Lugar_entrega");
+            Object[] fila = new Object[9];
+            fila[0] = rs.getString("idusuario");
+            fila[1] = rs.getString("nombreCompleto");
+            fila[2] = rs.getString("Dia_de_reservacion");
             fila[3] = rs.getString("Opcion");
+            fila[4] = rs.getString("Lugar_entrega");
+            fila[5] = rs.getString("TipoServicio");
+            fila[6] = rs.getString("Ceco");
+            fila[7] = rs.getString("Area");
+            fila[8] = rs.getString("Contratista");
             
-     
 
             modelo.addRow(fila);
         }
@@ -64,6 +78,10 @@ public class detallespedido extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null, "Error al cargar los datos: " + e.getMessage());
     }
 }
+
+ 
+ //join
+ 
 
     
     
@@ -127,13 +145,13 @@ public class detallespedido extends javax.swing.JFrame {
 
         jTablepedido.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Dia de reservacion", "cedula", "Nombre", "Opcion", "Servicio", "Ceco", "Area", "Contratista"
+                "Identificacion", "Nombre", "Fecha_entrega", "Opcion", "Lugar_entrega", "Servicio", "Ceco", "Area", "Contratista"
             }
         ));
         jScrollPane1.setViewportView(jTablepedido);
@@ -147,15 +165,21 @@ public class detallespedido extends javax.swing.JFrame {
             jTablepedido.getColumnModel().getColumn(3).setMinWidth(50);
             jTablepedido.getColumnModel().getColumn(3).setPreferredWidth(50);
             jTablepedido.getColumnModel().getColumn(3).setMaxWidth(50);
-            jTablepedido.getColumnModel().getColumn(4).setMinWidth(50);
-            jTablepedido.getColumnModel().getColumn(4).setPreferredWidth(50);
-            jTablepedido.getColumnModel().getColumn(4).setMaxWidth(50);
+            jTablepedido.getColumnModel().getColumn(4).setMinWidth(80);
+            jTablepedido.getColumnModel().getColumn(4).setPreferredWidth(80);
+            jTablepedido.getColumnModel().getColumn(4).setMaxWidth(80);
             jTablepedido.getColumnModel().getColumn(5).setMinWidth(50);
             jTablepedido.getColumnModel().getColumn(5).setPreferredWidth(50);
             jTablepedido.getColumnModel().getColumn(5).setMaxWidth(50);
-            jTablepedido.getColumnModel().getColumn(6).setMinWidth(60);
-            jTablepedido.getColumnModel().getColumn(6).setPreferredWidth(60);
-            jTablepedido.getColumnModel().getColumn(6).setMaxWidth(60);
+            jTablepedido.getColumnModel().getColumn(6).setMinWidth(40);
+            jTablepedido.getColumnModel().getColumn(6).setPreferredWidth(40);
+            jTablepedido.getColumnModel().getColumn(6).setMaxWidth(40);
+            jTablepedido.getColumnModel().getColumn(7).setMinWidth(40);
+            jTablepedido.getColumnModel().getColumn(7).setPreferredWidth(40);
+            jTablepedido.getColumnModel().getColumn(7).setMaxWidth(40);
+            jTablepedido.getColumnModel().getColumn(8).setMinWidth(50);
+            jTablepedido.getColumnModel().getColumn(8).setPreferredWidth(50);
+            jTablepedido.getColumnModel().getColumn(8).setMaxWidth(50);
         }
 
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/atras.png"))); // NOI18N
@@ -185,10 +209,9 @@ public class detallespedido extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnconfirmar))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 532, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(jButton1)
+                        .addGap(0, 632, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(

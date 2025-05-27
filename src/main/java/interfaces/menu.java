@@ -126,21 +126,22 @@ public class menu extends javax.swing.JFrame {
             String dia = jComboBoxDias.getSelectedItem().toString();
             String tipoServicio = jComboServicio.getSelectedItem().toString();
             String lugarEntrega = jComboBoxlugar.getSelectedItem().toString();
-            String cedula = txtcedula1.getText();
+            String identificacion = txtcedula1.getText();
 
           
 
             // Conexión y guardado en la base de datos
             try  {
-                String sql = "INSERT INTO reservacion (Dia_de_reservacion, Lugar_entrega, TipoServicio, Opcion, descripcion,cedula) VALUES (?,?,?,?, ?,?)";
+                String sql = "INSERT INTO reservacion (idUsuario,Dia_de_reservacion, Lugar_entrega, TipoServicio, Opcion, descripcion) VALUES (?,?,?,?,?,?)";
                  Connection conet = co.getConnection();
                PreparedStatement pst = conet.prepareStatement(sql);
-                pst.setString(1, dia);
-                pst.setString(2, lugarEntrega);
-                pst.setString(3, tipoServicio);
-                pst.setString(4, opcion);
-                pst.setString(5, descripcion);
-                pst.setString(6, cedula);
+                pst.setString(1, identificacion);
+                pst.setString(2, dia);
+                pst.setString(3, lugarEntrega);
+                pst.setString(4, tipoServicio);
+                pst.setString(5, opcion);
+                pst.setString(6, descripcion);
+                
 
                 pst.executeUpdate();
                 JOptionPane.showMessageDialog(null, "Reservación guardada con éxito.");

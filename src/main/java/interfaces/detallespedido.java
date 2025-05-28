@@ -3,6 +3,7 @@ package interfaces;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -32,10 +33,10 @@ public class detallespedido extends javax.swing.JFrame {
   
     
 public void detallesdelpedido() {
-   String sql = "SELECT r.idUsuario, u.nombreCompleto, r.Dia_de_reservacion, r.Opcion, " +
+   String sql = "SELECT u.idUsuario, u.nombreCompleto, r.Dia_de_reservacion, r.Opcion, " +
              "r.Lugar_entrega, r.TipoServicio, u.Ceco, u.Area, u.Contratista " +
              "FROM reservacion r " +
-             "JOIN usuario u ON r.idusuario = u.idUsuario";
+             "JOIN usuario u ON r.idpedido = u.idUsuario";
     
     
 //r. es un alias para la tabla reservacion.
@@ -56,7 +57,7 @@ public void detallesdelpedido() {
 
         while (rs.next()) {
             Object[] fila = new Object[9];
-            fila[0] = rs.getString("idusuario");
+            fila[0] = rs.getString("idUsuario");
             fila[1] = rs.getString("nombreCompleto");
             fila[2] = rs.getString("Dia_de_reservacion");
             fila[3] = rs.getString("Opcion");
@@ -69,7 +70,7 @@ public void detallesdelpedido() {
 
             modelo.addRow(fila);
         }
-
+  
         rs.close();
         pst.close();
         conet.close();
@@ -79,9 +80,47 @@ public void detallesdelpedido() {
     }
 }
 
- 
- //join
- 
+
+ private void eliminarpedido() {
+    int filaSeleccionada = jTablepedido.getSelectedRow();
+
+    if (filaSeleccionada == -1) {
+        JOptionPane.showMessageDialog(null, "Selecciona una fila para eliminar.");
+        return;
+    }
+
+    int confirmacion = JOptionPane.showConfirmDialog(null, "¿Estás seguro de eliminar esta fila?", "Confirmar", JOptionPane.YES_NO_OPTION);
+
+    if (confirmacion == JOptionPane.YES_OPTION) {
+        
+        int id = Integer.parseInt(jTablepedido.getValueAt(filaSeleccionada, 0).toString());
+
+        try {
+            Connection con = co.getConnection();
+            String sql = "DELETE FROM usuario_has_reservacion WHERE idUsuario, idpedido = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, id);
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                
+                DefaultTableModel model = (DefaultTableModel) jTablepedido.getModel();
+                model.removeRow(filaSeleccionada);
+
+                JOptionPane.showMessageDialog(null, "Registro eliminado correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(null, "No se pudo eliminar (ID no encontrado).");
+            }
+
+            ps.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al eliminar: " + e.getMessage());
+        }
+    }
+}
+
+
+    
 
     
     
@@ -155,32 +194,6 @@ public void detallesdelpedido() {
             }
         ));
         jScrollPane1.setViewportView(jTablepedido);
-        if (jTablepedido.getColumnModel().getColumnCount() > 0) {
-            jTablepedido.getColumnModel().getColumn(0).setMinWidth(110);
-            jTablepedido.getColumnModel().getColumn(0).setPreferredWidth(110);
-            jTablepedido.getColumnModel().getColumn(0).setMaxWidth(110);
-            jTablepedido.getColumnModel().getColumn(1).setMinWidth(70);
-            jTablepedido.getColumnModel().getColumn(1).setPreferredWidth(70);
-            jTablepedido.getColumnModel().getColumn(1).setMaxWidth(70);
-            jTablepedido.getColumnModel().getColumn(3).setMinWidth(50);
-            jTablepedido.getColumnModel().getColumn(3).setPreferredWidth(50);
-            jTablepedido.getColumnModel().getColumn(3).setMaxWidth(50);
-            jTablepedido.getColumnModel().getColumn(4).setMinWidth(80);
-            jTablepedido.getColumnModel().getColumn(4).setPreferredWidth(80);
-            jTablepedido.getColumnModel().getColumn(4).setMaxWidth(80);
-            jTablepedido.getColumnModel().getColumn(5).setMinWidth(50);
-            jTablepedido.getColumnModel().getColumn(5).setPreferredWidth(50);
-            jTablepedido.getColumnModel().getColumn(5).setMaxWidth(50);
-            jTablepedido.getColumnModel().getColumn(6).setMinWidth(40);
-            jTablepedido.getColumnModel().getColumn(6).setPreferredWidth(40);
-            jTablepedido.getColumnModel().getColumn(6).setMaxWidth(40);
-            jTablepedido.getColumnModel().getColumn(7).setMinWidth(40);
-            jTablepedido.getColumnModel().getColumn(7).setPreferredWidth(40);
-            jTablepedido.getColumnModel().getColumn(7).setMaxWidth(40);
-            jTablepedido.getColumnModel().getColumn(8).setMinWidth(50);
-            jTablepedido.getColumnModel().getColumn(8).setPreferredWidth(50);
-            jTablepedido.getColumnModel().getColumn(8).setMaxWidth(50);
-        }
 
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/atras.png"))); // NOI18N
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -200,18 +213,19 @@ public void detallesdelpedido() {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(btneliminar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnconfirmar))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addGap(0, 632, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton1)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 765, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -232,9 +246,9 @@ public void detallesdelpedido() {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 6, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -251,7 +265,7 @@ public void detallesdelpedido() {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btneliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneliminarActionPerformed
-        // TODO add your handling code here:
+      eliminarpedido();
     }//GEN-LAST:event_btneliminarActionPerformed
 
     /**

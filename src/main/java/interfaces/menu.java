@@ -132,7 +132,7 @@ public class menu extends javax.swing.JFrame {
 
             // Conexión y guardado en la base de datos
             try  {
-                String sql = "INSERT INTO reservacion (idUsuario,Dia_de_reservacion, Lugar_entrega, TipoServicio, Opcion, descripcion) VALUES (?,?,?,?,?,?)";
+                String sql = "INSERT INTO reservacion (idpedido,Dia_de_reservacion, Lugar_entrega, TipoServicio, Opcion, descripcion) VALUES (?,?,?,?,?,?)";
                  Connection conet = co.getConnection();
                PreparedStatement pst = conet.prepareStatement(sql);
                 pst.setString(1, identificacion);

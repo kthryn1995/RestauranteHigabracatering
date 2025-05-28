@@ -33,10 +33,10 @@ public class detallespedido extends javax.swing.JFrame {
   
     
 public void detallesdelpedido() {
-   String sql = "SELECT u.idUsuario, u.nombreCompleto, r.Dia_de_reservacion, r.Opcion, " +
+  String sql = "SELECT r.idpedido, u.idUsuario, u.nombreCompleto, r.Dia_de_reservacion, r.Opcion, " +
              "r.Lugar_entrega, r.TipoServicio, u.Ceco, u.Area, u.Contratista " +
              "FROM reservacion r " +
-             "JOIN usuario u ON r.idpedido = u.idUsuario";
+             "JOIN usuario u ON r.cedula = u.idUsuario";
     
     
 //r. es un alias para la tabla reservacion.
@@ -56,21 +56,26 @@ public void detallesdelpedido() {
         modelo.setRowCount(0); // Limpiar la tabla antes de cargar nuevos datos
 
         while (rs.next()) {
-            Object[] fila = new Object[9];
-            fila[0] = rs.getString("idUsuario");
-            fila[1] = rs.getString("nombreCompleto");
-            fila[2] = rs.getString("Dia_de_reservacion");
-            fila[3] = rs.getString("Opcion");
-            fila[4] = rs.getString("Lugar_entrega");
-            fila[5] = rs.getString("TipoServicio");
-            fila[6] = rs.getString("Ceco");
-            fila[7] = rs.getString("Area");
-            fila[8] = rs.getString("Contratista");
+    Object[] fila = new Object[10]; // Ahora son 10 columnas
+fila[0] = rs.getInt("idpedido");
+fila[1] = rs.getString("idUsuario");
+fila[2] = rs.getString("nombreCompleto");
+fila[3] = rs.getString("Dia_de_reservacion");
+fila[4] = rs.getString("Opcion");
+fila[5] = rs.getString("Lugar_entrega");
+fila[6] = rs.getString("TipoServicio");
+fila[7] = rs.getString("Ceco");
+fila[8] = rs.getString("Area");
+fila[9] = rs.getString("Contratista");
             
 
             modelo.addRow(fila);
         }
-  
+  // Ocultar la columna 0 (idpedido)
+jTablepedido.getColumnModel().getColumn(0).setMinWidth(0);
+jTablepedido.getColumnModel().getColumn(0).setMaxWidth(0);
+jTablepedido.getColumnModel().getColumn(0).setWidth(0);
+
         rs.close();
         pst.close();
         conet.close();
@@ -81,7 +86,7 @@ public void detallesdelpedido() {
 }
 
 
- private void eliminarpedido() {
+ public void eliminarpedido() {
     int filaSeleccionada = jTablepedido.getSelectedRow();
 
     if (filaSeleccionada == -1) {
@@ -92,33 +97,38 @@ public void detallesdelpedido() {
     int confirmacion = JOptionPane.showConfirmDialog(null, "¿Estás seguro de eliminar esta fila?", "Confirmar", JOptionPane.YES_NO_OPTION);
 
     if (confirmacion == JOptionPane.YES_OPTION) {
-        
-        int id = Integer.parseInt(jTablepedido.getValueAt(filaSeleccionada, 0).toString());
-
         try {
+            int idPedido = Integer.parseInt(jTablepedido.getValueAt(filaSeleccionada, 0).toString());
+
             Connection con = co.getConnection();
-            String sql = "DELETE FROM usuario_has_reservacion WHERE idUsuario, idpedido = ?";
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, id);
-            int filas = ps.executeUpdate();
+
+            // 1. Elimina de la tabla intermedia 
+            String sql1 = "DELETE FROM usuario_has_reservacion WHERE Reservación_idpedido = ?";
+            PreparedStatement ps1 = con.prepareStatement(sql1);
+            ps1.setInt(1, idPedido);
+            ps1.executeUpdate();
+
+            // 2. Elimina el pedido
+            String sql2 = "DELETE FROM reservacion WHERE idpedido = ?";
+            PreparedStatement ps2 = con.prepareStatement(sql2);
+            ps2.setInt(1, idPedido);
+            int filas = ps2.executeUpdate();
 
             if (filas > 0) {
-                
                 DefaultTableModel model = (DefaultTableModel) jTablepedido.getModel();
                 model.removeRow(filaSeleccionada);
-
-                JOptionPane.showMessageDialog(null, "Registro eliminado correctamente.");
+                JOptionPane.showMessageDialog(null, "Pedido eliminado correctamente.");
             } else {
-                JOptionPane.showMessageDialog(null, "No se pudo eliminar (ID no encontrado).");
+                JOptionPane.showMessageDialog(null, "No se encontró el pedido.");
             }
 
-            ps.close();
+            ps1.close();
+            ps2.close();
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al eliminar: " + e.getMessage());
         }
     }
 }
-
 
     
 

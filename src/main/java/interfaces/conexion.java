@@ -26,12 +26,17 @@ public class  conexion {
         }catch (Exception e){
             
             System.err.println("No se ha conectado la base de datos");
+            e.printStackTrace();// <--- muestra el error real
        
         }
     }
 
     public Connection getConnection(){
     return con;
+    }
+
+    Connection conectar() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
 }

@@ -129,6 +129,11 @@ public void Mostrarusuario() {
         btnregistrarusuarios.setBackground(new java.awt.Color(102, 153, 0));
         btnregistrarusuarios.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btnregistrarusuarios.setText("REGISTRAR");
+        btnregistrarusuarios.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnregistrarusuariosActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -191,7 +196,7 @@ public void Mostrarusuario() {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 542, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -205,7 +210,8 @@ public void Mostrarusuario() {
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 434, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -235,6 +241,12 @@ public void Mostrarusuario() {
         this.dispose();
 
     }//GEN-LAST:event_btnreservarActionPerformed
+
+    private void btnregistrarusuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnregistrarusuariosActionPerformed
+        registro rg = new registro();
+        rg.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnregistrarusuariosActionPerformed
 
     /**
      * @param args the command line arguments

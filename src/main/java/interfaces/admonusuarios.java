@@ -26,6 +26,7 @@ Connection conet;
 Statement st;
 ResultSet rs;
 DefaultTableModel tablausuarios;
+int idc;
 
 
    
@@ -36,6 +37,16 @@ DefaultTableModel tablausuarios;
         consultaradmonusuario();
         
     }
+  
+    public void limpiar(){
+    
+    while(tablausuarios.getRowCount()>0){
+       tablausuarios.removeRow(0);
+    
+    }
+    
+    }
+ 
     
     //creamos nuestro metodo consultar
     
@@ -74,40 +85,54 @@ JOptionPane.showMessageDialog(null, "Error al cargar los datos: " + e.getMessage
         
     }
     
-   public void actualizar() {
-    int totalFilas = jtregistro.getRowCount();
-
-    for (int i = 0; i < totalFilas; i++) {
-        int id = (int) jtregistro.getValueAt(i, 0);
-        String nombre = jtregistro.getValueAt(i, 1).toString();
-        String ceco = jtregistro.getValueAt(i, 2).toString();
-        String area = jtregistro.getValueAt(i, 3).toString();
-        String contratista = jtregistro.getValueAt(i, 4).toString();
-
-        String sql = "UPDATE usuario SET NombreCompleto=?, Ceco=?, Area=?, Contratista=? WHERE idUsuario=?";
-
-        try {
-            conet = co.getConnection();
-            PreparedStatement ps = conet.prepareStatement(sql);
-            ps.setString(1, nombre);
-            ps.setString(2, ceco);
-            ps.setString(3, area);
-            ps.setString(4, contratista);
-            ps.setInt(5, id);
-
-            int filas = ps.executeUpdate();
-            System.out.println("Filas afectadas en la fila " + (i+1) + ": " + filas);
-
-            ps.close(); // Importante cerrar
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al actualizar fila " + (i + 1) + ": " + e.getMessage());
+   public void actualizar(){
+  try{
+   int fila = jtregistro.getSelectedRow();
+        if (fila ==-1){
+          JOptionPane.showMessageDialog(null,"Seleccione una fila");
+         return;
         }
-    }
+ 
+        //obtenemos datos de las cajas de texto
+        
+        int id=Integer.parseInt(jtregistro.getValueAt(fila,0).toString());
+        String nombres= txtnombre.getText();
+        String ceco = txtceco.getText();
+        String area = txtarea.getText();
+        String contratista = txtcontratista.getText();
+ 
+ //consulta
+        String sql= "UPDATE usuario SET Nombrecompleto=?, Ceco=?, Area=?, Contratista=? WHERE IdUsuario=?";
 
-    JOptionPane.showMessageDialog(null, "Actualización finalizada.");
-}
-    
+        Connection conet= co.getConnection();
+        PreparedStatement pst = conet.prepareStatement(sql);
+        
+        
+        
+        pst.setString(1, nombres);
+        pst.setString(2, ceco);
+        pst.setString(3, area);
+        pst.setString(4, contratista);
+        pst.setInt(5, id);
+        
+        int filasactualizadas = pst.executeUpdate();
+         if (filasactualizadas > 0 ){
+           JOptionPane.showMessageDialog(null,"Registro Actualizado");
+           limpiar();
+           consultaradmonusuario();
+         }else{
+         JOptionPane.showMessageDialog(null,"No se encontro un registro para actualizar");
+         }
+        
+        
+ }catch (SQLException e){
+            System.out.println("error al actualizar"+e);
+ }
+   }
+   
+   
+   
+   
   private void eliminar() {
     int filaSeleccionada = jtregistro.getSelectedRow();
 
@@ -167,12 +192,25 @@ JOptionPane.showMessageDialog(null, "Error al cargar los datos: " + e.getMessage
         btneliminar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jtregistro = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        txtidentificacion = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        txtnombre = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        txtceco = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        txtarea = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        txtcontratista = new javax.swing.JTextField();
+        jPanel2 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
+        btnactualizar.setBackground(new java.awt.Color(102, 153, 0));
+        btnactualizar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnactualizar.setText("ACTUALIZAR");
         btnactualizar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -180,6 +218,8 @@ JOptionPane.showMessageDialog(null, "Error al cargar los datos: " + e.getMessage
             }
         });
 
+        btneliminar.setBackground(new java.awt.Color(102, 153, 0));
+        btneliminar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btneliminar.setText("ELIMINAR");
         btneliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -198,30 +238,62 @@ JOptionPane.showMessageDialog(null, "Error al cargar los datos: " + e.getMessage
                 "Identificacion", "Nombre", "Ceco", "Area", "Contratista"
             }
         ));
-        jScrollPane1.setViewportView(jtregistro);
-
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/atras.png"))); // NOI18N
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+        jtregistro.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jtregistroMouseClicked(evt);
             }
         });
+        jScrollPane1.setViewportView(jtregistro);
+
+        jLabel1.setText("Identifación:");
+
+        txtidentificacion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtidentificacionActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setText("Nombre:");
+
+        jLabel3.setText("Ceco:");
+
+        jLabel4.setText("Area:");
+
+        jLabel5.setText("Contratista:");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(10, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 446, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(btnactualizar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btneliminar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(btneliminar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(16, 16, 16)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 62, Short.MAX_VALUE)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(12, 12, 12)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtidentificacion)
+                            .addComponent(txtnombre)
+                            .addComponent(txtcontratista, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtceco)
+                            .addComponent(txtarea))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 446, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(25, 127, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -234,9 +306,54 @@ JOptionPane.showMessageDialog(null, "Error al cargar los datos: " + e.getMessage
                         .addComponent(btneliminar))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(txtidentificacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addComponent(txtceco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4)
+                    .addComponent(txtarea, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(txtcontratista, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(49, 49, 49))
+        );
+
+        jPanel2.setBackground(new java.awt.Color(102, 153, 0));
+
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/atras.png"))); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(7, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -244,12 +361,17 @@ JOptionPane.showMessageDialog(null, "Error al cargar los datos: " + e.getMessage
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 444, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -269,6 +391,34 @@ JOptionPane.showMessageDialog(null, "Error al cargar los datos: " + e.getMessage
     private void btneliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneliminarActionPerformed
         eliminar();
     }//GEN-LAST:event_btneliminarActionPerformed
+
+    private void txtidentificacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtidentificacionActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtidentificacionActionPerformed
+
+    private void jtregistroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jtregistroMouseClicked
+         txtidentificacion.setEditable(false);
+       int fila = jtregistro.getSelectedRow();
+      if (fila ==-1){
+          JOptionPane.showMessageDialog(null,"Seleccione una fila");
+          
+      }else {
+      idc = Integer.parseInt(jtregistro.getValueAt(fila, 0).toString());
+
+    String nombres = (String) jtregistro.getValueAt(fila, 1);
+    String ceco = (String) jtregistro.getValueAt(fila, 2);
+    String area = (String) jtregistro.getValueAt(fila, 3);
+    String contratista = (String) jtregistro.getValueAt(fila, 4);    
+
+      txtidentificacion.setText(""+idc);
+      txtnombre.setText(nombres);
+      txtceco.setText(ceco);
+      txtarea.setText(area);
+      txtcontratista.setText(contratista);
+
+
+      }
+    }//GEN-LAST:event_jtregistroMouseClicked
 
     
     /**
@@ -311,8 +461,19 @@ JOptionPane.showMessageDialog(null, "Error al cargar los datos: " + e.getMessage
     private javax.swing.JButton btnactualizar;
     private javax.swing.JButton btneliminar;
     private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jtregistro;
+    private javax.swing.JTextField txtarea;
+    private javax.swing.JTextField txtceco;
+    private javax.swing.JTextField txtcontratista;
+    private javax.swing.JTextField txtidentificacion;
+    private javax.swing.JTextField txtnombre;
     // End of variables declaration//GEN-END:variables
 }

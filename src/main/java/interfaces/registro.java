@@ -70,11 +70,15 @@ if (id.isEmpty() || id.equalsIgnoreCase("número de identificación") ||
     JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos antes de registrar.");
     return;
 }
+    
+
     // Validar que el ID sea un número
     if (!id.matches("\\d+")) {
         JOptionPane.showMessageDialog(null, "El número de identificación debe contener solo números.");
         return;
-    }   
+    }
+        
+        
         try{
            int idUsuario= Integer.parseInt(txtidentificacion.getText());
            String NombreCompleto=txtnombre.getText();

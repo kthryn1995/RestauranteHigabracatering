@@ -16,13 +16,13 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Kthryn
  */
-public class detallespedido extends javax.swing.JFrame {
+public class Consolidadodepedidos extends javax.swing.JFrame {
  conexion co= new conexion();
  Connection conet;
     /**
      * Creates new form detallespedido
      */
-    public detallespedido() {
+    public Consolidadodepedidos() {
         initComponents();
         setLocationRelativeTo(null);
         setResizable(false); 
@@ -33,52 +33,32 @@ public class detallespedido extends javax.swing.JFrame {
   
     
 public void detallesdelpedido() {
-  String sql = "SELECT r.idpedido, u.idUsuario, u.nombreCompleto, r.Dia_de_reservacion, r.Opcion, " +
-             "r.Lugar_entrega, r.TipoServicio, u.Ceco, u.Area, u.Contratista " +
-             "FROM reservacion r " +
-             "JOIN usuario u ON r.cedula = u.idUsuario";
-    
-    
-//r. es un alias para la tabla reservacion.
-//u alias para la tabla usuario
-// cómo deben coincidir las filas entre las dos tablas:
-//ON r.idusuario = u.idUsuario
+    String sql = "SELECT u.idUsuario, u.nombreCompleto, r.Dia_de_reservacion, r.Opcion, " +
+                 "r.Lugar_entrega, r.TipoServicio, u.Ceco, u.Area, u.Contratista " +
+                 "FROM reservacion r " +
+                 "JOIN usuario u ON r.cedula = u.idUsuario";
 
-
-
-
-    try {
-        Connection conet = co.getConnection();
-        PreparedStatement pst = conet.prepareStatement(sql);
-        ResultSet rs = pst.executeQuery();
+    try (Connection conet = co.getConnection();
+         PreparedStatement pst = conet.prepareStatement(sql);
+         ResultSet rs = pst.executeQuery()) {
 
         DefaultTableModel modelo = (DefaultTableModel) jTablepedido.getModel();
-        modelo.setRowCount(0); // Limpiar la tabla antes de cargar nuevos datos
+        modelo.setRowCount(0); // Limpia la tabla
 
         while (rs.next()) {
-    Object[] fila = new Object[10]; // Ahora son 10 columnas
-fila[0] = rs.getInt("idpedido");
-fila[1] = rs.getString("idUsuario");
-fila[2] = rs.getString("nombreCompleto");
-fila[3] = rs.getString("Dia_de_reservacion");
-fila[4] = rs.getString("Opcion");
-fila[5] = rs.getString("Lugar_entrega");
-fila[6] = rs.getString("TipoServicio");
-fila[7] = rs.getString("Ceco");
-fila[8] = rs.getString("Area");
-fila[9] = rs.getString("Contratista");
-            
+            Object[] fila = new Object[9];
+            fila[0] = rs.getString("idUsuario");
+            fila[1] = rs.getString("nombreCompleto");
+            fila[2] = rs.getString("Dia_de_reservacion");
+            fila[3] = rs.getString("Opcion");
+            fila[4] = rs.getString("Lugar_entrega");
+            fila[5] = rs.getString("TipoServicio");
+            fila[6] = rs.getString("Ceco");
+            fila[7] = rs.getString("Area");
+            fila[8] = rs.getString("Contratista");
 
             modelo.addRow(fila);
         }
-  // Ocultar la columna 0 (idpedido)
-jTablepedido.getColumnModel().getColumn(0).setMinWidth(0);
-jTablepedido.getColumnModel().getColumn(0).setMaxWidth(0);
-jTablepedido.getColumnModel().getColumn(0).setWidth(0);
-
-        rs.close();
-        pst.close();
-        conet.close();
 
     } catch (Exception e) {
         JOptionPane.showMessageDialog(null, "Error al cargar los datos: " + e.getMessage());
@@ -86,51 +66,32 @@ jTablepedido.getColumnModel().getColumn(0).setWidth(0);
 }
 
 
- public void eliminarpedido() {
-    int filaSeleccionada = jTablepedido.getSelectedRow();
 
-    if (filaSeleccionada == -1) {
-        JOptionPane.showMessageDialog(null, "Selecciona una fila para eliminar.");
-        return;
-    }
 
-    int confirmacion = JOptionPane.showConfirmDialog(null, "¿Estás seguro de eliminar esta fila?", "Confirmar", JOptionPane.YES_NO_OPTION);
 
-    if (confirmacion == JOptionPane.YES_OPTION) {
-        try {
-            int idPedido = Integer.parseInt(jTablepedido.getValueAt(filaSeleccionada, 0).toString());
 
-            Connection con = co.getConnection();
 
-            // 1. Elimina de la tabla intermedia 
-            String sql1 = "DELETE FROM usuario_has_reservacion WHERE Reservación_idpedido = ?";
-            PreparedStatement ps1 = con.prepareStatement(sql1);
-            ps1.setInt(1, idPedido);
-            ps1.executeUpdate();
 
-            // 2. Elimina el pedido
-            String sql2 = "DELETE FROM reservacion WHERE idpedido = ?";
-            PreparedStatement ps2 = con.prepareStatement(sql2);
-            ps2.setInt(1, idPedido);
-            int filas = ps2.executeUpdate();
 
-            if (filas > 0) {
-                DefaultTableModel model = (DefaultTableModel) jTablepedido.getModel();
-                model.removeRow(filaSeleccionada);
-                JOptionPane.showMessageDialog(null, "Pedido eliminado correctamente.");
-            } else {
-                JOptionPane.showMessageDialog(null, "No se encontró el pedido.");
-            }
 
-            ps1.close();
-            ps2.close();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al eliminar: " + e.getMessage());
-        }
+
+
+
+
+public void eliminarReservacion(int idpedido) {
+    String sql = "DELETE FROM reservacion WHERE idpedido = ?";
+    try (Connection con = co.getConnection();
+         PreparedStatement pst = con.prepareStatement(sql)) {
+
+        pst.setInt(1, idpedido);
+        pst.executeUpdate();
+        JOptionPane.showMessageDialog(null, "Reservación eliminada correctamente.");
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Error al eliminar: " + e.getMessage());
     }
 }
 
-    
 
     
     
@@ -232,10 +193,9 @@ jTablepedido.getColumnModel().getColumn(0).setWidth(0);
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnconfirmar))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton1)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 765, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(jButton1)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 777, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -249,7 +209,7 @@ jTablepedido.getColumnModel().getColumn(0).setWidth(0);
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btneliminar)
                     .addComponent(btnconfirmar))
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -257,8 +217,8 @@ jTablepedido.getColumnModel().getColumn(0).setWidth(0);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 6, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -275,7 +235,14 @@ jTablepedido.getColumnModel().getColumn(0).setWidth(0);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btneliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneliminarActionPerformed
-      eliminarpedido();
+ int filaSeleccionada = jTablepedido.getSelectedRow();
+if (filaSeleccionada >= 0) {
+    int idpedido = Integer.parseInt(jTablepedido.getValueAt(filaSeleccionada, 0).toString());
+    eliminarReservacion(idpedido);
+    detallesdelpedido(); // Recargar la tabla
+} else {
+    JOptionPane.showMessageDialog(null, "Seleccione una fila para eliminar.");
+}
     }//GEN-LAST:event_btneliminarActionPerformed
 
     /**
@@ -295,20 +262,21 @@ jTablepedido.getColumnModel().getColumn(0).setWidth(0);
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(detallespedido.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Consolidadodepedidos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(detallespedido.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Consolidadodepedidos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(detallespedido.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Consolidadodepedidos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(detallespedido.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Consolidadodepedidos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new detallespedido().setVisible(true);
+                new Consolidadodepedidos().setVisible(true);
             }
         });
     }

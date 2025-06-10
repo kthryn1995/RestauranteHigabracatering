@@ -20,7 +20,7 @@ import java.awt.event.ActionListener;
  *
  * @author Kthryn
  */
-public class menu extends javax.swing.JFrame {
+public class gestiondepedidos extends javax.swing.JFrame {
     conexion co= new conexion();
     Connection conet;
     Statement st;
@@ -31,7 +31,7 @@ public class menu extends javax.swing.JFrame {
     
     
     
-    public menu() {
+    public gestiondepedidos() {
         initComponents();
         setLocationRelativeTo(null);
         setResizable(false); 
@@ -158,12 +158,35 @@ public class menu extends javax.swing.JFrame {
     }
 }
 
+private boolean usuarioExiste(String cedula) {
+    String sql = "SELECT 1 FROM usuario WHERE idUsuario = ?";
+    try {
+        Connection conet = co.getConnection();
+        PreparedStatement pst = conet.prepareStatement(sql);
+        pst.setString(1, cedula);
+        ResultSet rs = pst.executeQuery();
+        return rs.next(); // retorna true si hay al menos un resultado
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
+    }
+}
 
 public void añadirpedidos() {
     DefaultTableModel model = (DefaultTableModel) jtableresumen.getModel();
     int rowCount = model.getRowCount();
 
-    String identificacion = txtcedula1.getText(); // asumimos que esta cédula es válida y obligatoria
+    String identificacion = txtcedula1.getText().trim();
+
+    if (identificacion.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Debe ingresar una cédula antes de continuar.");
+        return;
+    }
+
+    if (!usuarioExiste(identificacion)) {
+        JOptionPane.showMessageDialog(null, "El usuario con esa cédula no se encuentra registrado. No se le puede realizar reserva");
+        return;
+    }
 
     if (rowCount == 0) {
         JOptionPane.showMessageDialog(null, "No hay pedidos en el resumen para guardar.");
@@ -176,16 +199,15 @@ public void añadirpedidos() {
         PreparedStatement pst = conet.prepareStatement(sql);
 
         for (int i = 0; i < rowCount; i++) {
-            Object diaObj = model.getValueAt(i, 0);         // Día
-            Object servicioObj = model.getValueAt(i, 1);    // Tipo de servicio
-            Object lugarObj = model.getValueAt(i, 2);       // Lugar de entrega
-            Object opcionObj = model.getValueAt(i, 3);      // Opción
-            Object descripcionObj = model.getValueAt(i, 4); // Descripción
+            Object diaObj = model.getValueAt(i, 0);
+            Object servicioObj = model.getValueAt(i, 1);
+            Object lugarObj = model.getValueAt(i, 2);
+            Object opcionObj = model.getValueAt(i, 3);
+            Object descripcionObj = model.getValueAt(i, 4);
 
-            // Validar que ningún dato sea null
             if (diaObj == null || lugarObj == null || servicioObj == null || opcionObj == null || descripcionObj == null) {
                 JOptionPane.showMessageDialog(null, "Fila " + (i + 1) + " tiene datos vacíos. Verifica antes de guardar.");
-                continue; // salta esa fila
+                continue;
             }
 
             pst.setString(1, identificacion);
@@ -195,19 +217,17 @@ public void añadirpedidos() {
             pst.setString(5, opcionObj.toString());
             pst.setString(6, descripcionObj.toString());
 
-            pst.addBatch(); // agrupa múltiples inserts
-            
+            pst.addBatch();
         }
 
-
-        pst.executeBatch(); // ejecuta todos los inserts de una vez
+        pst.executeBatch();
         JOptionPane.showMessageDialog(null, "Reservaciones guardadas con éxito.");
-
     } catch (SQLException ex) {
         ex.printStackTrace();
         JOptionPane.showMessageDialog(null, "Error al guardar las reservaciones: " + ex.getMessage());
     }
 }
+
 
         
 
@@ -610,20 +630,21 @@ public void añadirpedidos() {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(menu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(gestiondepedidos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(menu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(gestiondepedidos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(menu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(gestiondepedidos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(menu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(gestiondepedidos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new menu().setVisible(true);
+                new gestiondepedidos().setVisible(true);
             }
         });
     }

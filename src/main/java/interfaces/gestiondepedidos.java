@@ -87,43 +87,46 @@ public class gestiondepedidos extends javax.swing.JFrame {
 }
 
  
-    public void ConsultarMenu() {
-    // Verificar si hay una selección válida
-    Object diaObj = jComboBoxDias.getSelectedItem();
-    Object servicioObj = jComboServicio.getSelectedItem();
+public void ConsultarMenu() {
+         // Obtener las selecciones del usuario
+    String diaSeleccionado = jComboBoxDias.getSelectedItem().toString();
+String servicioSeleccionado = jComboServicio.getSelectedItem().toString();
+    
 
-    if (diaObj == null || servicioObj == null) {
-        JOptionPane.showMessageDialog(null, "Debe seleccionar el día, el tipo de servicio y lugar de entrega antes de consultar.");
-        return;
-    }
 
-    String diaSeleccionado = diaObj.toString();
-    String servicioSeleccionado = servicioObj.toString();
+// Validación previa a la consulta
+if (diaSeleccionado.equalsIgnoreCase("--Seleccione--") || servicioSeleccionado.equalsIgnoreCase("--Seleccione--")) {
+    JOptionPane.showMessageDialog(null, "Por favor validar que se hayan ingresado todos los campos requeridos para la consulta");
+    return;
+}
 
-    // Validar que no se haya dejado la opción por defecto
-    if (diaSeleccionado.equalsIgnoreCase("--Seleccione--") || servicioSeleccionado.equalsIgnoreCase("--Seleccione--")) {
-        JOptionPane.showMessageDialog(null, "Por favor seleccione todos los campos requeridos para hacer la consulta.");
-        return;
-    }
-
-    // Consulta SQL
+    // Si pasa la validación, realiza la consulta
+        
+        
+        
     String sql = "SELECT * FROM plan_comidas WHERE dia_semana = ? AND tipo_comida = ?";
-
+    
     try {
         Connection conet = co.getConnection();
         PreparedStatement pst = conet.prepareStatement(sql);
+        
+        
+        
 
+      
         pst.setString(1, diaSeleccionado); 
         pst.setString(2, servicioSeleccionado); 
 
         ResultSet rs = pst.executeQuery(); 
 
-        DefaultTableModel modelo = (DefaultTableModel) jtpedido.getModel();
-        modelo.setRowCount(0); // Limpiar la tabla antes de mostrar nuevos resultados
 
-        boolean hayResultados = false;
+
+        
+        DefaultTableModel modelo = (DefaultTableModel) jtpedido.getModel();
+        modelo.setRowCount(0);
+
+       
         while (rs.next()) {
-            hayResultados = true;
             Object[] fila = new Object[3];
             fila[0] = rs.getString("tipo_comida");
             fila[1] = rs.getInt("opcion");
@@ -131,23 +134,15 @@ public class gestiondepedidos extends javax.swing.JFrame {
 
             modelo.addRow(fila);
         }
-
-        if (!hayResultados) {
-            JOptionPane.showMessageDialog(null, "No se encontraron menús para los datos seleccionados.");
-        }
-
         jtpedido.setModel(modelo);
 
-        // Cierre de recursos
-        rs.close();
-        pst.close();
-        conet.close();
 
     } catch (Exception e) {
-        e.printStackTrace(); // Para la consola
-        JOptionPane.showMessageDialog(null, "Error al consultar el menú: " + e.getMessage());
-    }
+    e.printStackTrace(); // Muestra el error en consola
+    JOptionPane.showMessageDialog(null, "Error al consultar el menú: " + e.getMessage());
 }
+}
+
 
   public void Mostrarusuario() {
     String cedula = txtcedula1.getText().trim(); // Elimina espacios en blanco
@@ -245,12 +240,34 @@ public void añadirpedidos() {
         }
 
         pst.executeBatch();
-        JOptionPane.showMessageDialog(null, "Reservaciones guardadas con éxito.");
+       
+       JOptionPane.showMessageDialog(null, "Reservaciones guardadas con éxito.");
+       limpiarcampos();
+       
     } catch (SQLException ex) {
         ex.printStackTrace();
         JOptionPane.showMessageDialog(null, "Error al guardar las reservaciones: " + ex.getMessage());
     }
 }
+     
+       
+   public void limpiarcampos(){
+      txtcedula1.setText("");
+      jComboBoxDias.setSelectedIndex(0);
+      jComboBoxlugar.setSelectedIndex(0);
+      jComboServicio.setSelectedIndex(0);
+      jLabelnombreusuario.setText("");
+      
+      // Limpiar tabla de resumen (jtableresumen)
+DefaultTableModel modeloResumen = (DefaultTableModel) jtableresumen.getModel();
+modeloResumen.setRowCount(0);
+
+// Limpiar tabla de pedidos (jtpedido)
+DefaultTableModel modeloPedido = (DefaultTableModel) jtpedido.getModel();
+modeloPedido.setRowCount(0);
+    
+   }
+
 
 
         

@@ -4,12 +4,27 @@
  */
 package interfaces;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
+
+
 /**
  *
  * @author Kthryn
  */
 public class consultarpedidos extends javax.swing.JFrame {
-
+// realizamos la conexion con la BD
+conexion co=new conexion();
+Connection conet;
+Statement st;
+ResultSet rs;
+DefaultTableModel modelopedidos;
     /**
      * Creates new form consultarpedidos
      */
@@ -17,8 +32,149 @@ public class consultarpedidos extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         setResizable(false);
+        
+        
     }
 
+    public void verpedidos() {
+    String cedulaTexto = txtcedula.getText().trim(); // Campo de texto donde el usuario escribe su cédula
+
+    if (cedulaTexto.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Por favor, ingrese un número de cédula.");
+        return;
+    }
+
+    try {
+        int cedula = Integer.parseInt(cedulaTexto); // Convertimos el texto a número
+
+        String sql = "SELECT idpedido, Dia_de_reservacion, Lugar_entrega, TipoServicio, FROM reservacion WHERE cedula = ?";
+
+        conet = co.getConnection();
+        PreparedStatement pst = conet.prepareStatement(sql);
+        pst.setInt(1, cedula); // Enviamos como número
+
+        rs = pst.executeQuery();
+
+        modelopedidos = (DefaultTableModel) jTableconsultarpedidos.getModel();
+        modelopedidos.setRowCount(0); // Limpiar la tabla antes de llenarla
+
+        boolean hayResultados = false;
+
+        while (rs.next()) {
+            Object[] fila = new Object[4];
+            fila[0] = rs.getString("idpedido");
+            fila[1] = rs.getString("Dia_de_reservacion");
+            fila[2] = rs.getString("Lugar_entrega");
+            fila[3] = rs.getString("TipoServicio");
+            
+            modelopedidos.addRow(fila);
+            hayResultados = true;
+        }
+
+        if (!hayResultados) {
+            JOptionPane.showMessageDialog(null, "No se encontraron pedidos para esa cédula.");
+        }
+
+        jTableconsultarpedidos.setModel(modelopedidos);
+
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(null, "La cédula debe contener solo números.");
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Error al consultar pedidos: " + e.getMessage());
+    }
+}
+
+    
+  
+    private void eliminarpedido() {
+    int filaSeleccionada = jTableconsultarpedidos.getSelectedRow();
+
+    if (filaSeleccionada == -1) {
+        JOptionPane.showMessageDialog(null, "Selecciona una fila para eliminar.");
+        return;
+    }
+
+    int confirmacion = JOptionPane.showConfirmDialog(null, "¿Estás seguro de eliminar esta fila?", "Confirmar", JOptionPane.YES_NO_OPTION);
+
+    if (confirmacion == JOptionPane.YES_OPTION) {
+        
+        int id = Integer.parseInt(jTableconsultarpedidos.getValueAt(filaSeleccionada, 0).toString());
+
+        try {
+            Connection con = co.getConnection();
+            String sql = "DELETE FROM reservacion WHERE idpedido = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, id);
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                
+                DefaultTableModel model = (DefaultTableModel) jTableconsultarpedidos.getModel();
+                model.removeRow(filaSeleccionada);
+
+                JOptionPane.showMessageDialog(null, "Registro eliminado correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(null, "No se pudo eliminar (ID no encontrado).");
+            }
+
+            ps.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al eliminar: " + e.getMessage());
+        }
+    }
+}
+    /*public void actualizar(){
+  try{
+   int fila = jTableconsultarpedidos.getSelectedRow();
+        if (fila ==-1){
+          JOptionPane.showMessageDialog(null,"Seleccione una fila");
+         return;
+        }
+ 
+        //obtenemos datos de las cajas de texto
+        
+        int id=Integer.parseInt(jTableconsultarpedidos.getValueAt(fila,0).toString());
+        String diaReservacion= txtcedula.getText();
+        String ceco = txtceco.getText();
+        String area = txtarea.getText();
+        String contratista = txtcontratista.getText();
+ 
+ //consulta
+        String sql= "UPDATE usuario SET Nombrecompleto=?, Ceco=?, Area=?, Contratista=? WHERE IdUsuario=?";
+
+        Connection conet= co.getConnection();
+        PreparedStatement pst = conet.prepareStatement(sql);
+        
+        
+        
+        pst.setString(1, nombres);
+        pst.setString(2, ceco);
+        pst.setString(3, area);
+        pst.setString(4, contratista);
+        pst.setInt(5, id);
+        
+        int filasactualizadas = pst.executeUpdate();
+         if (filasactualizadas > 0 ){
+           JOptionPane.showMessageDialog(null,"Registro Actualizado");
+           limpiar();
+           consultaradmonusuario();
+         }else{
+         JOptionPane.showMessageDialog(null,"No se encontro un registro para actualizar");
+         }
+        
+        
+ }catch (SQLException e){
+            System.out.println("error al actualizar"+e);
+ }
+   }
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -32,15 +188,11 @@ public class consultarpedidos extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        jlabelidpedido = new javax.swing.JLabel();
-        txtidpedido = new javax.swing.JTextField();
         jlabelcedula = new javax.swing.JLabel();
         txtcedula = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jlabellugardeentrega = new javax.swing.JLabel();
         jLabelservicio = new javax.swing.JLabel();
-        jLabelopcion = new javax.swing.JLabel();
-        txtopcion = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableconsultarpedidos = new javax.swing.JTable();
         jComboBoxdiadereservacion = new javax.swing.JComboBox<>();
@@ -50,6 +202,7 @@ public class consultarpedidos extends javax.swing.JFrame {
         btneliminar = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
+        btnconsultar = new javax.swing.JButton();
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -88,8 +241,6 @@ public class consultarpedidos extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
-        jlabelidpedido.setText("Id pedido: ");
-
         jlabelcedula.setText("Cédula:");
 
         txtcedula.addActionListener(new java.awt.event.ActionListener() {
@@ -104,8 +255,6 @@ public class consultarpedidos extends javax.swing.JFrame {
 
         jLabelservicio.setText("Tipo de servicio:");
 
-        jLabelopcion.setText("Opción:");
-
         jTableconsultarpedidos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -114,7 +263,7 @@ public class consultarpedidos extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Dia de reservación", "Lugar de entrega", "Tipo de servicio", "Opción"
+                "Id pedido", "Dia de reservación", "Lugar de entrega", "Tipo de servicio"
             }
         ));
         jScrollPane1.setViewportView(jTableconsultarpedidos);
@@ -132,6 +281,11 @@ public class consultarpedidos extends javax.swing.JFrame {
         btneliminar.setBackground(new java.awt.Color(102, 153, 0));
         btneliminar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btneliminar.setText("ELIMINAR");
+        btneliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btneliminarActionPerformed(evt);
+            }
+        });
 
         jPanel5.setBackground(new java.awt.Color(102, 153, 0));
         jPanel5.setForeground(new java.awt.Color(255, 255, 255));
@@ -160,56 +314,52 @@ public class consultarpedidos extends javax.swing.JFrame {
                 .addContainerGap(9, Short.MAX_VALUE))
         );
 
+        btnconsultar.setText("CONSULTAR");
+        btnconsultar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnconsultarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(36, 119, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jlabelcedula, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jlabelidpedido, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(jlabelcedula, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtidpedido, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtcedula, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(txtcedula, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(jLabel1)
-                                        .addComponent(jlabellugardeentrega, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jLabelservicio, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addComponent(jLabelopcion, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jlabellugardeentrega, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabelservicio, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtopcion)
                                     .addComponent(jComboBoxdiadereservacion, 0, 112, Short.MAX_VALUE)
                                     .addComponent(jComboBox1, 0, 1, Short.MAX_VALUE)
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(0, 0, Short.MAX_VALUE)))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 197, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnactualizar, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btneliminar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(20, 20, 20))))
-            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btneliminar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnconsultar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(20, 20, 20))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(12, 12, 12)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlabelidpedido)
-                    .addComponent(txtidpedido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnactualizar))
+                .addComponent(btnactualizar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlabelcedula)
@@ -218,8 +368,9 @@ public class consultarpedidos extends javax.swing.JFrame {
                 .addGap(12, 12, 12)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jComboBoxdiadereservacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(15, 15, 15)
+                    .addComponent(jComboBoxdiadereservacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnconsultar))
+                .addGap(14, 14, 14)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlabellugardeentrega)
                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -227,11 +378,7 @@ public class consultarpedidos extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelservicio)
                     .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabelopcion)
-                    .addComponent(txtopcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(28, 28, 28)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -261,6 +408,14 @@ public class consultarpedidos extends javax.swing.JFrame {
         this.dispose();
 
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void btnconsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnconsultarActionPerformed
+        verpedidos();
+    }//GEN-LAST:event_btnconsultarActionPerformed
+
+    private void btneliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneliminarActionPerformed
+        eliminarpedido();
+    }//GEN-LAST:event_btneliminarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -299,13 +454,13 @@ public class consultarpedidos extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnactualizar;
+    private javax.swing.JButton btnconsultar;
     private javax.swing.JButton btneliminar;
     private javax.swing.JButton jButton1;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JComboBox<String> jComboBoxdiadereservacion;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabelopcion;
     private javax.swing.JLabel jLabelservicio;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -315,10 +470,7 @@ public class consultarpedidos extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableconsultarpedidos;
     private javax.swing.JLabel jlabelcedula;
-    private javax.swing.JLabel jlabelidpedido;
     private javax.swing.JLabel jlabellugardeentrega;
     private javax.swing.JTextField txtcedula;
-    private javax.swing.JTextField txtidpedido;
-    private javax.swing.JTextField txtopcion;
     // End of variables declaration//GEN-END:variables
-}
+    }

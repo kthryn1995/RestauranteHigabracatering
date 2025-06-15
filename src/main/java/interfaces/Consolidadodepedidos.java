@@ -68,16 +68,6 @@ public void detallesdelpedido() {
 
 
 
-
-
-
-
-
-
-
-
-
-
 public void eliminarReservacion(int idpedido) {
     String sql = "DELETE FROM reservacion WHERE idpedido = ?";
     try (Connection con = co.getConnection();

@@ -68,19 +68,8 @@ public void detallesdelpedido() {
 
 
 
-public void eliminarReservacion(int idpedido) {
-    String sql = "DELETE FROM reservacion WHERE idpedido = ?";
-    try (Connection con = co.getConnection();
-         PreparedStatement pst = con.prepareStatement(sql)) {
 
-        pst.setInt(1, idpedido);
-        pst.executeUpdate();
-        JOptionPane.showMessageDialog(null, "Reservación eliminada correctamente.");
 
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(null, "Error al eliminar: " + e.getMessage());
-    }
-}
 
 
     
@@ -228,14 +217,7 @@ public void eliminarReservacion(int idpedido) {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btneliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneliminarActionPerformed
- int filaSeleccionada = jTablepedido.getSelectedRow();
-if (filaSeleccionada >= 0) {
-    int idpedido = Integer.parseInt(jTablepedido.getValueAt(filaSeleccionada, 0).toString());
-    eliminarReservacion(idpedido);
-    detallesdelpedido(); // Recargar la tabla
-} else {
-    JOptionPane.showMessageDialog(null, "Seleccione una fila para eliminar.");
-}
+
     }//GEN-LAST:event_btneliminarActionPerformed
 
     /**

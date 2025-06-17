@@ -1,5 +1,6 @@
 package interfaces;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -131,6 +132,11 @@ public void detallesdelpedido() {
 
         btnexportar.setBackground(new java.awt.Color(204, 102, 0));
         btnexportar.setText("EXPORTAR");
+        btnexportar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnexportarActionPerformed(evt);
+            }
+        });
 
         jTablepedido.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -219,6 +225,18 @@ public void detallesdelpedido() {
     private void btneliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneliminarActionPerformed
 
     }//GEN-LAST:event_btneliminarActionPerformed
+
+    private void btnexportarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnexportarActionPerformed
+       ExportarExcel obj;
+
+        try {
+            obj = new ExportarExcel();
+            obj.exportarExcel(jTablepedido);
+        } catch (IOException ex) {
+            System.out.println("Error: " + ex);
+        }
+       
+    }//GEN-LAST:event_btnexportarActionPerformed
 
     /**
      * @param args the command line arguments

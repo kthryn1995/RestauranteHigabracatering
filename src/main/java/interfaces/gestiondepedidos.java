@@ -254,9 +254,6 @@ public void añadirpedidos() {
        
    public void limpiarcampos(){
       txtcedula1.setText("");
-      jComboBoxDias.setSelectedIndex(0);
-      jComboBoxlugar.setSelectedIndex(0);
-      jComboServicio.setSelectedIndex(0);
       jLabelnombreusuario.setText("");
       
       // Limpiar tabla de resumen (jtableresumen)

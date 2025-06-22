@@ -67,6 +67,49 @@ public void detallesdelpedido() {
 }
 
 
+private void eliminarPedidosSemana() {
+    int confirmacion = JOptionPane.showConfirmDialog(null,
+        "¿Estás seguro de eliminar todos los pedidos de la semana?",
+        "Confirmar eliminación masiva",
+        JOptionPane.YES_NO_OPTION);
+
+    if (confirmacion != JOptionPane.YES_OPTION) {
+        return; // Usuario canceló
+    }
+
+    String[] diasSemana = {"Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"};
+
+    try {
+        conexion co = new conexion();
+        Connection con = co.getConnection(); 
+        String sql = "DELETE FROM reservacion WHERE Dia_de_reservacion IN (?, ?, ?, ?, ?, ?, ?)";
+        PreparedStatement ps = con.prepareStatement(sql);
+
+        for (int i = 0; i < diasSemana.length; i++) {
+            ps.setString(i + 1, diasSemana[i]);
+        }
+
+        int filasEliminadas = ps.executeUpdate();
+
+        if (filasEliminadas > 0) {
+            JOptionPane.showMessageDialog(null, filasEliminadas + " pedidos eliminados correctamente.");
+
+            // Limpia la tabla visual
+            DefaultTableModel model = (DefaultTableModel) jTablepedido.getModel();
+            model.setRowCount(0); // Vacía la tabla visual
+            
+        } else {
+            JOptionPane.showMessageDialog(null, "No se encontraron pedidos de la semana para eliminar.");
+        }
+
+        ps.close();
+        con.close();
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Error al eliminar pedidos: " + e.getMessage());
+    }
+}
+
 
 
 
@@ -223,7 +266,7 @@ public void detallesdelpedido() {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btneliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneliminarActionPerformed
-
+eliminarPedidosSemana();
     }//GEN-LAST:event_btneliminarActionPerformed
 
     private void btnexportarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnexportarActionPerformed

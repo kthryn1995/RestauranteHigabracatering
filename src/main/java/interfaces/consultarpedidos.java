@@ -131,50 +131,54 @@ DefaultTableModel modelopedidos;
     
     
     
-    /*public void actualizar(){
-  try{
-   int fila = jTableconsultarpedidos.getSelectedRow();
-        if (fila ==-1){
-          JOptionPane.showMessageDialog(null,"Seleccione una fila");
-         return;
+    public void actualizar() {
+    try {
+        int fila = jTableconsultarpedidos.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(null, "Seleccione una fila");
+            return;
         }
- 
-        //obtenemos datos de las cajas de texto
-        
-        int id=Integer.parseInt(jTableconsultarpedidos.getValueAt(fila,0).toString());
-        String diaReservacion= txtcedula.getText();
-        String ceco = txtceco.getText();
-        String area = txtarea.getText();
-        String contratista = txtcontratista.getText();
- 
- //consulta
-        String sql= "UPDATE usuario SET Nombrecompleto=?, Ceco=?, Area=?, Contratista=? WHERE IdUsuario=?";
 
-        Connection conet= co.getConnection();
+        // ✅ Obtenemos el ID del pedido (columna 0)
+        int idpedido = Integer.parseInt(jTableconsultarpedidos.getValueAt(fila, 0).toString());
+
+        // ✅ Obtenemos los nuevos valores desde los JComboBox
+        String diareservacion = jComboBoxdiadereservacion.getSelectedItem().toString();
+        String lugar = jComboBoxlugar.getSelectedItem().toString();
+        String servicio = jComboBoxservicio.getSelectedItem().toString().trim();
+
+
+        // ✅ Consulta SQL correcta
+        String sql = "UPDATE reservacion SET Dia_de_reservacion = ?, Lugar_entrega = ?, TipoServicio = ? WHERE idpedido = ?";
+
+        Connection conet = co.getConnection();
         PreparedStatement pst = conet.prepareStatement(sql);
-        
-        
-        
-        pst.setString(1, nombres);
-        pst.setString(2, ceco);
-        pst.setString(3, area);
-        pst.setString(4, contratista);
-        pst.setInt(5, id);
-        
+
+        // ✅ Establecemos los parámetros
+        pst.setString(1, diareservacion);
+        pst.setString(2, lugar);
+        pst.setString(3, servicio);
+        pst.setInt(4, idpedido); // ID de la fila seleccionada
+
+        // ✅ Ejecutamos
         int filasactualizadas = pst.executeUpdate();
-         if (filasactualizadas > 0 ){
-           JOptionPane.showMessageDialog(null,"Registro Actualizado");
-           limpiar();
-           consultaradmonusuario();
-         }else{
-         JOptionPane.showMessageDialog(null,"No se encontro un registro para actualizar");
-         }
+
+        if (filasactualizadas > 0) {
+            JOptionPane.showMessageDialog(null, "Registro actualizado correctamente.");
+            verpedidos(); // Refrescar tabla
+        } else {
+            JOptionPane.showMessageDialog(null, "No se encontró el registro para actualizar.");
+        }
+
+        pst.close();
+        conet.close();
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Error al actualizar: " + e.getMessage());
+    }
+}
+
         
-        
- }catch (SQLException e){
-            System.out.println("error al actualizar"+e);
- }
-   }
     
     
     
@@ -205,8 +209,8 @@ DefaultTableModel modelopedidos;
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableconsultarpedidos = new javax.swing.JTable();
         jComboBoxdiadereservacion = new javax.swing.JComboBox<>();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jComboBox2 = new javax.swing.JComboBox<>();
+        jComboBoxlugar = new javax.swing.JComboBox<>();
+        jComboBoxservicio = new javax.swing.JComboBox<>();
         btnactualizar = new javax.swing.JButton();
         btneliminar = new javax.swing.JButton();
         btnconsultar = new javax.swing.JButton();
@@ -280,13 +284,18 @@ DefaultTableModel modelopedidos;
 
         jComboBoxdiadereservacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sábado", "Domingo" }));
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "Comedor Platanal", "Aph HIgabra", "Mantenimiento mecanico" }));
+        jComboBoxlugar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "Comedor Platanal", "Aph HIgabra", "Mantenimiento mecanico" }));
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione", "Desayuno", "Almuerzo", "Cena" }));
+        jComboBoxservicio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione", "Desayuno", "Almuerzo", "Cena" }));
 
         btnactualizar.setBackground(new java.awt.Color(102, 153, 0));
         btnactualizar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnactualizar.setText("ACTUALIZAR");
+        btnactualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnactualizarActionPerformed(evt);
+            }
+        });
 
         btneliminar.setBackground(new java.awt.Color(102, 153, 0));
         btneliminar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -339,9 +348,9 @@ DefaultTableModel modelopedidos;
                     .addComponent(txtcedula, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(jComboBoxdiadereservacion, 0, 112, Short.MAX_VALUE)
-                        .addComponent(jComboBox1, 0, 1, Short.MAX_VALUE)
+                        .addComponent(jComboBoxlugar, 0, 1, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jComboBoxservicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(0, 0, Short.MAX_VALUE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -383,11 +392,11 @@ DefaultTableModel modelopedidos;
                         .addGap(14, 14, 14)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jlabellugardeentrega)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jComboBoxlugar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabelservicio)
-                            .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jComboBoxservicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(11, 11, 11)
@@ -436,6 +445,10 @@ DefaultTableModel modelopedidos;
      this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void btnactualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnactualizarActionPerformed
+        actualizar();
+    }//GEN-LAST:event_btnactualizarActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -477,9 +490,9 @@ DefaultTableModel modelopedidos;
     private javax.swing.JButton btneliminar;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JComboBox<String> jComboBoxdiadereservacion;
+    private javax.swing.JComboBox<String> jComboBoxlugar;
+    private javax.swing.JComboBox<String> jComboBoxservicio;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabelservicio;

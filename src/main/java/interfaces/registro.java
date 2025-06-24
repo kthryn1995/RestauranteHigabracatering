@@ -204,7 +204,7 @@ JOptionPane.showMessageDialog(null, "Error al registrar en la base de datos.");
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/HIGABRA2.png"))); // NOI18N
 
-        Registrarse.setBackground(new java.awt.Color(102, 153, 0));
+        Registrarse.setBackground(new java.awt.Color(153, 211, 38));
         Registrarse.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         Registrarse.setText("REGISTRAR");
         Registrarse.addActionListener(new java.awt.event.ActionListener() {
@@ -213,7 +213,7 @@ JOptionPane.showMessageDialog(null, "Error al registrar en la base de datos.");
             }
         });
 
-        btnadmon.setBackground(new java.awt.Color(102, 153, 0));
+        btnadmon.setBackground(new java.awt.Color(153, 211, 38));
         btnadmon.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnadmon.setText("ADMINISTRAR");
         btnadmon.addActionListener(new java.awt.event.ActionListener() {
@@ -240,14 +240,14 @@ JOptionPane.showMessageDialog(null, "Error al registrar en la base de datos.");
                         .addComponent(btnadmon)
                         .addGap(0, 2, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel2)
-                .addGap(95, 95, 95))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(73, 73, 73)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(84, 84, 84))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -268,8 +268,8 @@ JOptionPane.showMessageDialog(null, "Error al registrar en la base de datos.");
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnadmon)
                     .addComponent(Registrarse))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 

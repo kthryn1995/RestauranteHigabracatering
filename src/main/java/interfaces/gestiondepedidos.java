@@ -110,16 +110,12 @@ if (diaSeleccionado.equalsIgnoreCase("--Seleccione--") || servicioSeleccionado.e
         Connection conet = co.getConnection();
         PreparedStatement pst = conet.prepareStatement(sql);
         
-        
-        
-
+       
       
         pst.setString(1, diaSeleccionado); 
         pst.setString(2, servicioSeleccionado); 
 
         ResultSet rs = pst.executeQuery(); 
-
-
 
         
         DefaultTableModel modelo = (DefaultTableModel) jtpedido.getModel();

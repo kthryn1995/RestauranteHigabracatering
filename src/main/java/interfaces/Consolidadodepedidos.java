@@ -33,6 +33,7 @@ public class Consolidadodepedidos extends javax.swing.JFrame {
     }
 
 
+
   
     
 public void detallesdelpedido() {
@@ -71,7 +72,7 @@ public void detallesdelpedido() {
 
 private void eliminarPedidosSemana() {
     int confirmacion = JOptionPane.showConfirmDialog(null,
-        "¿Estás seguro de eliminar todos los pedidos de la semana?",
+        "¿Estás segura de eliminar todos los pedidos de la semana?\nSe hará un respaldo antes de eliminarlos.",
         "Confirmar eliminación masiva",
         JOptionPane.YES_NO_OPTION);
 
@@ -84,35 +85,46 @@ private void eliminarPedidosSemana() {
     try {
         conexion co = new conexion();
         Connection con = co.getConnection(); 
-        String sql = "DELETE FROM reservacion WHERE Dia_de_reservacion IN (?, ?, ?, ?, ?, ?, ?)";
-        PreparedStatement ps = con.prepareStatement(sql);
 
+        // 🔁 1. RESPALDAR EN papeleriadereciclaje
+        String respaldoSQL = "INSERT INTO papeleriadereciclaje " +
+            "(identificacion, nombreyapellidos, fechadeEntrega, opcion, lugarEntrega, servicio, ceco, area, contratista) " +
+            "SELECT u.idUsuario, u.nombreCompleto, r.Dia_de_reservacion, r.Opcion, " +
+            "r.Lugar_entrega, r.TipoServicio, u.Ceco, u.Area, u.Contratista " +
+            "FROM reservacion r " +
+            "JOIN usuario u ON r.cedula = u.idUsuario " +
+            "WHERE r.Dia_de_reservacion IN (?, ?, ?, ?, ?, ?, ?)";
+        
+        PreparedStatement respaldo = con.prepareStatement(respaldoSQL);
         for (int i = 0; i < diasSemana.length; i++) {
-            ps.setString(i + 1, diasSemana[i]);
+            respaldo.setString(i + 1, diasSemana[i]);
+        }
+        respaldo.executeUpdate();
+        respaldo.close();
+
+        // 🗑️ 2. ELIMINAR DE reservacion
+        String eliminarSQL = "DELETE FROM reservacion WHERE Dia_de_reservacion IN (?, ?, ?, ?, ?, ?, ?)";
+        PreparedStatement eliminar = con.prepareStatement(eliminarSQL);
+        for (int i = 0; i < diasSemana.length; i++) {
+            eliminar.setString(i + 1, diasSemana[i]);
         }
 
-        int filasEliminadas = ps.executeUpdate();
+        int filasEliminadas = eliminar.executeUpdate();
+        eliminar.close();
+        con.close();
 
         if (filasEliminadas > 0) {
-            JOptionPane.showMessageDialog(null, filasEliminadas + " pedidos eliminados correctamente.");
-
-            // Limpia la tabla visual
+            JOptionPane.showMessageDialog(null, filasEliminadas + " pedidos eliminados correctamente. Se guardó una copia en la papelería.");
             DefaultTableModel model = (DefaultTableModel) jTablepedido.getModel();
-            model.setRowCount(0); // Vacía la tabla visual
-            
+            model.setRowCount(0); // Limpia la tabla visual
         } else {
             JOptionPane.showMessageDialog(null, "No se encontraron pedidos de la semana para eliminar.");
         }
-
-        ps.close();
-        con.close();
 
     } catch (SQLException e) {
         JOptionPane.showMessageDialog(null, "Error al eliminar pedidos: " + e.getMessage());
     }
 }
-
-
 
 
     
@@ -205,6 +217,9 @@ private void eliminarPedidosSemana() {
 
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
+        menuBar1 = new java.awt.MenuBar();
+        menu1 = new java.awt.Menu();
+        menu2 = new java.awt.Menu();
         jPanel1 = new javax.swing.JPanel();
         btnexportar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -219,6 +234,11 @@ private void eliminarPedidosSemana() {
         jlabel = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -241,6 +261,12 @@ private void eliminarPedidosSemana() {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 100, Short.MAX_VALUE)
         );
+
+        menu1.setLabel("File");
+        menuBar1.add(menu1);
+
+        menu2.setLabel("Edit");
+        menuBar1.add(menu2);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -312,6 +338,14 @@ private void eliminarPedidosSemana() {
 
         jLabel2.setText("Dia de la semana");
 
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/borrar.png"))); // NOI18N
+        jButton2.setText("PAPELERIA");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -322,18 +356,20 @@ private void eliminarPedidosSemana() {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 144, Short.MAX_VALUE)
+                        .addComponent(jButton2)
+                        .addGap(26, 26, 26)
                         .addComponent(btnactualizar)
                         .addGap(38, 38, 38)
                         .addComponent(btneliminar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnexportar)
                         .addGap(6, 6, 6))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 858, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jlabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtcedula, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE))
+                            .addComponent(jlabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+                            .addComponent(txtcedula, javax.swing.GroupLayout.Alignment.LEADING))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jComboboxServicio, 0, 93, Short.MAX_VALUE)
@@ -375,19 +411,38 @@ private void eliminarPedidosSemana() {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btneliminar)
-                        .addComponent(btnactualizar))
+                        .addComponent(btnactualizar)
+                        .addComponent(jButton2))
                     .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnexportar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
+
+        jMenu1.setText("Inicio");
+        jMenu1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenu1ActionPerformed(evt);
+            }
+        });
+
+        jMenuItem1.setText("Volver a inicio");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem1);
+
+        jMenuBar1.add(jMenu1);
+        jMenuBar1.add(jMenu2);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -431,6 +486,22 @@ eliminarPedidosSemana();
   
     }//GEN-LAST:event_btnBuscarActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        papeleriadereciclaje papel = new papeleriadereciclaje();
+        papel.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+       inicio in = new inicio();
+        in.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jMenu1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenu1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenu1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -473,16 +544,24 @@ eliminarPedidosSemana();
     private javax.swing.JButton btneliminar;
     private javax.swing.JButton btnexportar;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JComboBox<String> jComboboxDia;
     private javax.swing.JComboBox<String> jComboboxServicio;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTablepedido;
     private javax.swing.JLabel jlabel;
+    private java.awt.Menu menu1;
+    private java.awt.Menu menu2;
+    private java.awt.MenuBar menuBar1;
     private javax.swing.JTextField txtcedula;
     // End of variables declaration//GEN-END:variables
 }

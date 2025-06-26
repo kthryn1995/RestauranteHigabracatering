@@ -56,6 +56,7 @@ public void usuario() {
             JOptionPane.showMessageDialog(null, "datos incorrectos");
             txtusuario.setText(" ");
             jpass.setText(" ");
+            return;
         }
 
     } catch (Exception e) {

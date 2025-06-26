@@ -274,6 +274,11 @@ JOptionPane.showMessageDialog(null, "Error al registrar en la base de datos.");
         );
 
         jmenuinicio.setText("Inicio");
+        jmenuinicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmenuinicioActionPerformed(evt);
+            }
+        });
 
         jMenuItem1.setText("Salir");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -391,6 +396,10 @@ if (txtnombre.getText().isEmpty()) {
     in.setVisible(true);
     this.dispose();
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jmenuinicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmenuinicioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jmenuinicioActionPerformed
     
 
     

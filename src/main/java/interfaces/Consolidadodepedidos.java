@@ -112,11 +112,18 @@ private void eliminarPedidosSemana() {
     }
 }
 
-public void filtrarPedidosPorCriterios() {
+
+
+
+    
+    public void filtrarPedidosPorCriterios() {
     DefaultTableModel modelo = (DefaultTableModel) jTablepedido.getModel();
     modelo.setRowCount(0); // Limpia la tabla
 
-    String sql = "SELECT * FROM reservacion WHERE 1=1";
+   String sql = "SELECT r.*, u.NombreCompleto, u.Ceco, u.Area, u.Contratista " +
+             "FROM reservacion r " +
+             "JOIN usuario u ON r.cedula = u.idUsuario " +
+             "WHERE 1=1";
     List<Object> parametros = new ArrayList<>();
 
     String dia = jComboboxDia.getSelectedItem().toString();
@@ -138,7 +145,14 @@ public void filtrarPedidosPorCriterios() {
     }
 
     try {
-        Connection con = co.getConnection(); // Usa tu clase de conexión
+        // 🚨 NUEVO: crear nueva instancia para asegurar que la conexión esté activa
+        Connection con = new conexion().getConnection();
+
+        if (con == null || con.isClosed()) {
+            JOptionPane.showMessageDialog(null, "La conexión con la base de datos está cerrada.");
+            return;
+        }
+
         PreparedStatement ps = con.prepareStatement(sql);
 
         for (int i = 0; i < parametros.size(); i++) {
@@ -150,7 +164,7 @@ public void filtrarPedidosPorCriterios() {
         while (rs.next()) {
             Object[] fila = new Object[]{
                 rs.getString("cedula"),
-                rs.getString("Nombre"),
+                rs.getString("NombreCompleto"),
                 rs.getString("Dia_de_reservacion"),
                 rs.getInt("Opcion"),
                 rs.getString("Lugar_entrega"),
@@ -164,14 +178,14 @@ public void filtrarPedidosPorCriterios() {
 
         rs.close();
         ps.close();
+        con.close(); // <- Cierra la conexión al final
 
     } catch (SQLException e) {
         JOptionPane.showMessageDialog(null, "Error al filtrar: " + e.getMessage());
     }
 }
 
-    
-    
+
     
     
     
@@ -202,6 +216,9 @@ public void filtrarPedidosPorCriterios() {
         txtcedula = new javax.swing.JTextField();
         jComboboxServicio = new javax.swing.JComboBox<>();
         btnBuscar = new javax.swing.JButton();
+        jlabel = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -259,6 +276,7 @@ public void filtrarPedidosPorCriterios() {
             }
         });
 
+        btneliminar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btneliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/borrar.png"))); // NOI18N
         btneliminar.setText("ELIMINAR SEMANA");
         btneliminar.addActionListener(new java.awt.event.ActionListener() {
@@ -267,6 +285,7 @@ public void filtrarPedidosPorCriterios() {
             }
         });
 
+        btnactualizar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnactualizar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/procesamiento-de-datos.png"))); // NOI18N
         btnactualizar.setText("ACTUALIZAR");
         btnactualizar.addActionListener(new java.awt.event.ActionListener() {
@@ -275,16 +294,23 @@ public void filtrarPedidosPorCriterios() {
             }
         });
 
-        jComboboxDia.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Dia de la semana", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo", " " }));
+        jComboboxDia.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Todos", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo", " " }));
 
-        jComboboxServicio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Servicio", "Desayuno", "Almuerzo", "Cena" }));
+        jComboboxServicio.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Todos", "Desayuno", "Almuerzo", "Cena" }));
 
+        btnBuscar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnBuscar.setText("BUSCAR");
         btnBuscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnBuscarActionPerformed(evt);
             }
         });
+
+        jlabel.setText("Identificación");
+
+        jLabel1.setText("Servicio");
+
+        jLabel2.setText("Dia de la semana");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -300,18 +326,28 @@ public void filtrarPedidosPorCriterios() {
                         .addComponent(btnactualizar)
                         .addGap(38, 38, 38)
                         .addComponent(btneliminar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnexportar))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnexportar)
+                        .addGap(6, 6, 6))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 858, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(txtcedula, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jlabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtcedula, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
-                        .addComponent(jComboboxServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jComboboxDia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnBuscar)
-                        .addGap(22, 22, 22)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jComboboxServicio, 0, 93, Short.MAX_VALUE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(12, 12, 12)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jComboboxDia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnBuscar)
+                                .addGap(22, 22, 22))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -319,7 +355,12 @@ public void filtrarPedidosPorCriterios() {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(41, 41, 41)
+                        .addGap(13, 13, 13)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlabel)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtcedula, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jComboboxServicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -331,12 +372,12 @@ public void filtrarPedidosPorCriterios() {
                         .addGap(18, 18, 18)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnexportar)
                         .addComponent(btneliminar)
                         .addComponent(btnactualizar))
-                    .addComponent(jButton1))
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnexportar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -434,11 +475,14 @@ eliminarPedidosSemana();
     private javax.swing.JButton jButton1;
     private javax.swing.JComboBox<String> jComboboxDia;
     private javax.swing.JComboBox<String> jComboboxServicio;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTablepedido;
+    private javax.swing.JLabel jlabel;
     private javax.swing.JTextField txtcedula;
     // End of variables declaration//GEN-END:variables
 }

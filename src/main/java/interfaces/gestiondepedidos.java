@@ -334,7 +334,7 @@ modeloPedido.setRowCount(0);
         jLabellugarentrega.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabellugarentrega.setText("Lugar de entrega");
 
-        jComboBoxlugar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione", "Comedor Platanal", "Aph Higabra", "Mantenimiento mecanico" }));
+        jComboBoxlugar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione", "Comedor Platanal", "Aph Higabra", "Mantenimiento mecanico", "Edificio Mina Higabra", "Edificio Administrativo Higabra", "Contenedores Azules Higabra", "Mantenimiento mecanico Oficinas Verdes", " " }));
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/higabra.png"))); // NOI18N
 
@@ -376,6 +376,7 @@ modeloPedido.setRowCount(0);
                 "Tipo de comida", "Opcion", "Descripcion"
             }
         ));
+        jtpedido.setFillsViewportHeight(true);
         jtpedido.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jtpedidoMouseClicked(evt);
@@ -435,11 +436,15 @@ modeloPedido.setRowCount(0);
                 "Dia", "Servicio", "Lugar", "Opción", "Descripcion"
             }
         ));
+        jtableresumen.setFillsViewportHeight(true);
         jScrollPane1.setViewportView(jtableresumen);
         if (jtableresumen.getColumnModel().getColumnCount() > 0) {
             jtableresumen.getColumnModel().getColumn(0).setMinWidth(60);
             jtableresumen.getColumnModel().getColumn(0).setPreferredWidth(60);
             jtableresumen.getColumnModel().getColumn(0).setMaxWidth(60);
+            jtableresumen.getColumnModel().getColumn(3).setMinWidth(50);
+            jtableresumen.getColumnModel().getColumn(3).setPreferredWidth(50);
+            jtableresumen.getColumnModel().getColumn(3).setMaxWidth(50);
         }
 
         Btneliminar.setBackground(new java.awt.Color(153, 211, 38));
@@ -515,7 +520,17 @@ modeloPedido.setRowCount(0);
                         .addContainerGap()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabelcalendario)
+                        .addComponent(jLabelcalendario))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btndetallesdelpedido)
+                            .addComponent(btndetalles))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jComboBoxDias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -533,16 +548,9 @@ modeloPedido.setRowCount(0);
                         .addGap(152, 152, 152)
                         .addComponent(jLabel1))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btndetallesdelpedido)
-                            .addComponent(btndetalles))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(12, 12, 12)
+                        .addGap(40, 40, 40)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnañadir)
                             .addComponent(Btneliminar))
@@ -562,8 +570,7 @@ modeloPedido.setRowCount(0);
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setText("Ingrese numero de cedula");
 
-        jLabelnombreusuario.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabelnombreusuario.setForeground(new java.awt.Color(204, 204, 204));
+        jLabelnombreusuario.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabelnombreusuario.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabelnombreusuario.setText("usuario");
 
@@ -604,7 +611,7 @@ modeloPedido.setRowCount(0);
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 464, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 482, Short.MAX_VALUE))
         );
 
         pack();

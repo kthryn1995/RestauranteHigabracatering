@@ -280,6 +280,7 @@ DefaultTableModel modelopedidos;
                 "Id pedido", "Dia de reservación", "Lugar de entrega", "Tipo de servicio"
             }
         ));
+        jTableconsultarpedidos.setFillsViewportHeight(true);
         jScrollPane1.setViewportView(jTableconsultarpedidos);
 
         jComboBoxdiadereservacion.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sábado", "Domingo" }));

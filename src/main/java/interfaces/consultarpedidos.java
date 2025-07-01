@@ -171,7 +171,7 @@ DefaultTableModel modelopedidos;
         }
 
         pst.close();
-        conet.close();
+      
 
     } catch (SQLException e) {
         JOptionPane.showMessageDialog(null, "Error al actualizar: " + e.getMessage());

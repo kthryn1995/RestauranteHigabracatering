@@ -128,7 +128,7 @@ JOptionPane.showMessageDialog(null, "Error al cargar los datos: " + e.getMessage
 
         pst.close();
         rs.close();
-        conet.close();
+      
 
     } catch (NumberFormatException e) {
         JOptionPane.showMessageDialog(null, "La cédula debe contener solo números.");
@@ -142,51 +142,59 @@ JOptionPane.showMessageDialog(null, "Error al cargar los datos: " + e.getMessage
     
     
     
-   public void actualizar(){
-  try{
-   int fila = jtregistro.getSelectedRow();
-        if (fila ==-1){
-          JOptionPane.showMessageDialog(null,"Seleccione una fila");
-         return;
+   public void actualizar() {
+    Connection conet = null;
+    PreparedStatement pst = null;
+
+    try {
+        int fila = jtregistro.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(null, "Seleccione una fila.");
+            return;
         }
- 
-        //obtenemos datos de las cajas de texto
-        
-        int id=Integer.parseInt(jtregistro.getValueAt(fila,0).toString());
-        String nombres= txtnombre.getText();
+
+        // Obtiene datos de las cajas de texto
+        int id = Integer.parseInt(jtregistro.getValueAt(fila, 0).toString());
+        String nombres = txtnombre.getText();
         String ceco = txtceco.getText();
         String area = txtarea.getText();
         String contratista = txtcontratista.getText();
- 
- //consulta
-        String sql= "UPDATE usuario SET Nombrecompleto=?, Ceco=?, Area=?, Contratista=? WHERE IdUsuario=?";
 
-        Connection conet= co.getConnection();
-        PreparedStatement pst = conet.prepareStatement(sql);
-        
-        
-        
+        // Usa la conexión ya creada
+        conet = co.getConnection();
+
+        String sql = "UPDATE usuario SET Nombrecompleto=?, Ceco=?, Area=?, Contratista=? WHERE IdUsuario=?";
+        pst = conet.prepareStatement(sql);
+
         pst.setString(1, nombres);
         pst.setString(2, ceco);
         pst.setString(3, area);
         pst.setString(4, contratista);
         pst.setInt(5, id);
-        
+
         int filasactualizadas = pst.executeUpdate();
-         if (filasactualizadas > 0 ){
-           JOptionPane.showMessageDialog(null,"Registro Actualizado");
-           limpiar();
-           consultaradmonusuario();
-         }else{
-         JOptionPane.showMessageDialog(null,"No se encontro un registro para actualizar");
-         }
-        
-        
- }catch (SQLException e){
-            System.out.println("error al actualizar"+e);
- }
-   }
-   
+        if (filasactualizadas > 0) {
+            JOptionPane.showMessageDialog(null, "Registro actualizado.");
+            limpiar();
+            consultaradmonusuario(); // Refresca la tabla
+        } else {
+            JOptionPane.showMessageDialog(null, "No se encontró un registro para actualizar.");
+        }
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Error al actualizar: " + e.getMessage());
+    } finally {
+        // Cierra solo el PreparedStatement
+        try {
+            if (pst != null) pst.close();
+            // No cerrar conet aquí, porque usarás la misma conexión global en otros métodos
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al cerrar recursos: " + e.getMessage());
+        }
+    }
+}
+
+
    
    
    
@@ -398,7 +406,7 @@ JOptionPane.showMessageDialog(null, "Error al cargar los datos: " + e.getMessage
                             .addComponent(txtidentificacion, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(6, 6, 6)

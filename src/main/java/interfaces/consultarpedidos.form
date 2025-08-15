@@ -322,7 +322,7 @@
               <Font name="Segoe UI" size="14" style="1"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/procesamiento-de-datos.png"/>
+              <Image iconType="3" name="/actualizar-flecha (1).png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="ACTUALIZAR"/>
           </Properties>
@@ -386,7 +386,7 @@
               <Font name="Segoe UI" size="14" style="0"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/flecha.png"/>
+              <Image iconType="3" name="/hoja-de-calculo.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Consolidado"/>
           </Properties>
